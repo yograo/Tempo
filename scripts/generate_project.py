@@ -38,30 +38,34 @@ targets = []
 groups = []
 products = []
 
-for name, folder, is_test in [("Tempo", "Tempo", False), ("TempoUITests", "TempoUITests", True)]:
+for name, folder, is_test in [("Tempo", "Tempo", False), ("TempoActivity", "TempoActivity", False), ("TempoUITests", "TempoUITests", True)]:
+    is_widget = name == "TempoActivity"
     sources = []
     resources = []
     references = []
     files = sorted((ROOT / folder).rglob("*.swift"))
     if not is_test:
+        files += sorted((ROOT / "Shared").glob("*.swift"))
+    if not is_test and not is_widget:
         files += [ROOT / "Tempo/Resources/Assets.xcassets"]
         files += [ROOT / f"Tempo/Resources/{tone}.wav" for tone in ("countdown", "transition", "complete")]
     for file in files:
         path = str(file.relative_to(ROOT))
         kind = "sourcecode.swift" if file.suffix == ".swift" else "folder.assetcatalog" if file.suffix == ".xcassets" else "audio.wav"
-        ref = add(path, isa="PBXFileReference", lastKnownFileType=kind, path=path, sourceTree="SOURCE_ROOT")
+        key = name + path if path.startswith("Shared/") else path
+        ref = add(key, isa="PBXFileReference", lastKnownFileType=kind, path=path, sourceTree="SOURCE_ROOT")
         references.append(ref)
-        build = add(path + "build", isa="PBXBuildFile", fileRef=ref)
+        build = add(key + "build", isa="PBXBuildFile", fileRef=ref)
         (sources if file.suffix == ".swift" else resources).append(build)
     groups.append(add(name + "group", isa="PBXGroup", children=references, name=name, sourceTree="<group>"))
-    product = add(name + "product", isa="PBXFileReference", explicitFileType="wrapper.cfbundle" if is_test else "wrapper.application",
-                  includeInIndex=0, path=name + (".xctest" if is_test else ".app"), sourceTree="BUILT_PRODUCTS_DIR")
+    product = add(name + "product", isa="PBXFileReference", explicitFileType="wrapper.cfbundle" if is_test else "wrapper.app-extension" if is_widget else "wrapper.application",
+                  includeInIndex=0, path=name + (".xctest" if is_test else ".appex" if is_widget else ".app"), sourceTree="BUILT_PRODUCTS_DIR")
     products.append(product)
     phases = [add(name + "sources", isa="PBXSourcesBuildPhase", buildActionMask=2147483647, files=sources, runOnlyForDeploymentPostprocessing=0),
               add(name + "frameworks", isa="PBXFrameworksBuildPhase", buildActionMask=2147483647, files=[], runOnlyForDeploymentPostprocessing=0),
               add(name + "resources", isa="PBXResourcesBuildPhase", buildActionMask=2147483647, files=resources, runOnlyForDeploymentPostprocessing=0)]
     settings = {
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.yograo.tempo.uitests" if is_test else "com.yograo.tempo",
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.yograo.tempo.uitests" if is_test else "com.yograo.tempo.activity" if is_widget else "com.yograo.tempo",
         "PRODUCT_NAME": "$(TARGET_NAME)", "GENERATE_INFOPLIST_FILE": "YES", "SWIFT_VERSION": "5.0",
         "TARGETED_DEVICE_FAMILY": "1,2", "CODE_SIGN_STYLE": "Automatic", "CURRENT_PROJECT_VERSION": "1",
         "MARKETING_VERSION": "1.0", "LD_RUNPATH_SEARCH_PATHS": "$(inherited) @executable_path/Frameworks",
@@ -71,20 +75,32 @@ for name, folder, is_test in [("Tempo", "Tempo", False), ("TempoUITests", "Tempo
         settings["TEST_TARGET_NAME"] = "Tempo"
         proxy = add("testProxy", isa="PBXContainerItemProxy", containerPortal=project_id, proxyType=1, remoteGlobalIDString=app_id, remoteInfo="Tempo")
         dependencies = [add("testDependency", isa="PBXTargetDependency", target=app_id, targetProxy=proxy)]
+    elif is_widget:
+        settings.update({"INFOPLIST_FILE": "TempoActivity/Info.plist", "SKIP_INSTALL": "YES",
+                         "APPLICATION_EXTENSION_API_ONLY": "YES",
+                         "INFOPLIST_KEY_CFBundleDisplayName": "Tempo workout"})
     else:
         settings.update({
+            "INFOPLIST_FILE": "Tempo/Info.plist",
+            "INFOPLIST_KEY_NSSupportsLiveActivities": "YES",
             "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
             "INFOPLIST_KEY_CFBundleDisplayName": "Tempo",
-            "INFOPLIST_KEY_UIApplicationSceneManifest_Generation": "YES",
+            "INFOPLIST_KEY_UIApplicationSceneManifest_Generation": "NO",
             "INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents": "YES",
             "INFOPLIST_KEY_UILaunchScreen_Generation": "YES",
             "INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone": "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight",
             "INFOPLIST_KEY_UIRequiresFullScreen": "YES",
             "INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad": "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight",
         })
+    if name == "Tempo":
+        widget_id = ident("TempoActivity-target")
+        proxy = add("widgetProxy", isa="PBXContainerItemProxy", containerPortal=project_id, proxyType=1, remoteGlobalIDString=widget_id, remoteInfo="TempoActivity")
+        dependencies.append(add("widgetDependency", isa="PBXTargetDependency", target=widget_id, targetProxy=proxy))
+        embed = add("embedWidget", isa="PBXBuildFile", fileRef=ident("TempoActivityproduct"), settings={"ATTRIBUTES": ["RemoveHeadersOnCopy"]})
+        phases.append(add("embedExtensions", isa="PBXCopyFilesBuildPhase", buildActionMask=2147483647, dstPath="", dstSubfolderSpec=13, files=[embed], name="Embed App Extensions", runOnlyForDeploymentPostprocessing=0))
     targets.append(add(name + "-target", isa="PBXNativeTarget", buildConfigurationList=config_list(name, settings), buildPhases=phases,
                        buildRules=[], dependencies=dependencies, name=name, productName=name, productReference=product,
-                       productType="com.apple.product-type.bundle.ui-testing" if is_test else "com.apple.product-type.application"))
+                       productType="com.apple.product-type.bundle.ui-testing" if is_test else "com.apple.product-type.app-extension" if is_widget else "com.apple.product-type.application"))
 
 products_group = add("products", isa="PBXGroup", children=products, name="Products", sourceTree="<group>")
 main_group = add("main", isa="PBXGroup", children=groups + [products_group], sourceTree="<group>")

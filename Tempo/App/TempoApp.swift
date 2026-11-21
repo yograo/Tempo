@@ -1,22 +1,39 @@
 import SwiftUI
+import UserNotifications
 
 @main
 struct TempoApp: App {
     @UIApplicationDelegateAdaptor(TempoAppDelegate.self) private var appDelegate
     @State private var store = RoutineStore()
+    @State private var workouts = WorkoutStore()
 
     var body: some Scene {
         WindowGroup {
             RoutineLibraryView(store: store)
+                .environment(workouts)
                 .tint(TempoTheme.ink)
                 .preferredColorScheme(.light)
+                .fullScreenCover(item: Binding(get: { workouts.controller }, set: { if $0 == nil { workouts.close() } })) { controller in
+                    WorkoutView(controller: controller)
+                }
         }
     }
 }
 
 @MainActor
-final class TempoAppDelegate: NSObject, UIApplicationDelegate {
+final class TempoAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     static var orientationMask: UIInterfaceOrientationMask = .portrait
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification,
+                                            withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // The foreground timer already plays its own cue.
+        completionHandler([])
+    }
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         Self.orientationMask

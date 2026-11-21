@@ -1,12 +1,11 @@
 import SwiftUI
+import AVFoundation
 
 struct WorkoutView: View {
-    @State private var controller: WorkoutController
+    @Bindable var controller: WorkoutController
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingEnd = false
-
-    init(routine: Routine) { _controller = State(initialValue: WorkoutController(routine: routine)) }
 
     private var timeline: WorkoutTimeline { controller.timeline }
     private var accent: Color { timeline.currentStep?.kind == .rest ? TempoTheme.mint : TempoTheme.lime }
@@ -36,9 +35,13 @@ struct WorkoutView: View {
                         }
                         .frame(minHeight: wide ? max(220, geometry.size.height - 110) : nil)
                     }
-                    Text(controller.audioUnavailable ? "Sound is unavailable. Visual cues and haptics are still on." : controller.pausedAutomatically ? "Paused when you left the app. Resume when you’re ready." : "Keep Tempo open. Leaving the app pauses your timer.")
+                    Text(controller.audioUnavailable ? "Sound is unavailable. Visual cues and haptics are still on." : controller.pausedAutomatically ? "Paused for an audio interruption. Resume when you’re ready." : controller.lockScreenMessage)
                         .font(.system(size: 11)).foregroundStyle(.white.opacity(0.5))
                         .multilineTextAlignment(.center)
+                    if let error = controller.historyError {
+                        Button { controller.retrySave() } label: { Text(error).font(.footnote) }
+                            .accessibilityIdentifier("retry-history-save")
+                    }
                 }
                 .padding(.horizontal, 24).padding(.vertical, 12)
                 .frame(minHeight: geometry.size.height)
@@ -52,22 +55,40 @@ struct WorkoutView: View {
         .confirmationDialog("End this workout?", isPresented: $showingEnd, titleVisibility: .visible) {
             Button("End workout", role: .destructive) { dismiss() }
             Button("Keep going", role: .cancel) { }
-        } message: { Text("Your routine is saved. You can start it again any time.") }
+        } message: { Text("Your time so far will be saved in workout history.") }
         .task {
             TempoAppDelegate.setWorkoutOrientation(true)
-            controller.start()
+            await controller.start()
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .milliseconds(50)) } catch { break }
                 controller.tick()
             }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active { controller.pauseForInterruption() }
-            else { TempoAppDelegate.setWorkoutOrientation(true) }
+            if phase == .background { controller.leaveForeground() }
+            else if phase == .active {
+                controller.returnToForeground()
+                TempoAppDelegate.setWorkoutOrientation(true)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { notification in
+            guard let raw = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+                  AVAudioSession.InterruptionType(rawValue: raw) == .began else { return }
+            controller.pauseForInterruption()
         }
         .onDisappear {
-            controller.stop()
             TempoAppDelegate.setWorkoutOrientation(false)
+        }
+        .overlay {
+            if controller.preparingCues {
+                VStack(spacing: 16) {
+                    ProgressView().tint(TempoTheme.lime)
+                    Text("Preparing spoken alerts…").font(.headline)
+                    Button("Cancel") { dismiss() }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(TempoTheme.dark)
+            }
         }
     }
 
@@ -79,6 +100,11 @@ struct WorkoutView: View {
                 .font(.system(.subheadline, design: .rounded)).foregroundStyle(.white.opacity(0.55))
                 .lineLimit(1).padding(.leading, 12)
             Spacer(minLength: 8)
+            Button { controller.toggleSpeech() } label: {
+                Image(systemName: controller.speechEnabled ? "text.bubble.fill" : "text.bubble")
+                    .font(.system(size: 16)).frame(width: 44, height: 44)
+                    .background(.white.opacity(0.08), in: Circle())
+            }.accessibilityLabel(controller.speechEnabled ? "Turn spoken cues off" : "Turn spoken cues on")
             Button { controller.toggleSound() } label: {
                 Image(systemName: controller.soundEnabled ? "speaker.wave.2" : "speaker.slash")
                     .font(.system(size: 16, weight: .medium))

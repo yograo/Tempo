@@ -6,7 +6,7 @@ struct RoutineDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showingEditor = false
     @State private var showingDelete = false
-    @State private var activeRoutine: Routine?
+    @Environment(WorkoutStore.self) private var workouts
 
     private var routine: Routine? { store.routines.first { $0.id == routineID } }
 
@@ -51,12 +51,12 @@ struct RoutineDetailView: View {
                             }.padding(.horizontal, 18).padding(.vertical, 8)
                                 .background(.white, in: RoundedRectangle(cornerRadius: 24))
                         }
-                        Label("Beep between steps. A long tone at the finish.", systemImage: "speaker.wave.2")
+                        Label("Spoken cues guide each step. Your timer keeps going when the screen locks.", systemImage: "speaker.wave.2")
                             .font(.footnote).foregroundStyle(TempoTheme.muted).padding(.bottom, 8)
                     }.padding(.horizontal, 24)
                 }
                 .safeAreaInset(edge: .bottom) {
-                    PrimaryButton(title: "Start routine", symbol: "play.fill") { activeRoutine = routine }
+                    PrimaryButton(title: "Start routine", symbol: "play.fill") { workouts.start(routine) }
                         .accessibilityIdentifier("start-routine")
                         .padding(.horizontal, 24).padding(.vertical, 12).background(TempoTheme.paper)
                 }
@@ -82,7 +82,6 @@ struct RoutineDetailView: View {
         .confirmationDialog("Delete this routine?", isPresented: $showingDelete, titleVisibility: .visible) {
             Button("Delete routine", role: .destructive) { if store.delete(routineID) { dismiss() } }
         } message: { Text("This will remove the routine and all of its steps.") }
-        .fullScreenCover(item: $activeRoutine) { WorkoutView(routine: $0) }
     }
 
     private func metric(_ value: String, label: String) -> some View {

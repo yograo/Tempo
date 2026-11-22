@@ -4,3 +4,10 @@ build-device/
 .DS_Store
 xcuserdata/
 *.xcuserstate
+node_modules/
+backend/cdk.out/
+backend/dist/
+backend/cdk.context.json
+backend/cdk-outputs*.json
+backend/.env
+backend/.env.*

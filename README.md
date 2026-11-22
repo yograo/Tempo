@@ -62,3 +62,7 @@ Verified on the iPhone 17 Pro simulator (iOS 26.4): 23 core tests passed, along 
 - `TempoUITests`: simulator interaction tests.
 
 `python3 scripts/generate_project.py` regenerates the Xcode project, app icon, and WAV cues using only Python’s standard library. Run it after adding new Swift source files. The generated project and resources are already included.
+
+## Feature-request backend
+
+The [backend](backend/README.md) implements an anonymous `POST /v1/feature-requests` API on AWS. App users can submit requests; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is a separate follow-up.

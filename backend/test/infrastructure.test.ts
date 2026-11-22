@@ -3,10 +3,18 @@ import { test } from "node:test";
 import { App } from "aws-cdk-lib";
 import { Match, Template } from "aws-cdk-lib/assertions";
 import { FeedbackStack } from "../lib/feedback-stack.js";
+import { BOUNDARY_POLICY_NAME, BOOTSTRAP_QUALIFIER } from "../lib/deployment-access.js";
 
 const app = new App();
 const stack = new FeedbackStack(app, "TempoFeedbackTest");
 const template = Template.fromStack(stack);
+
+test("the application uses the isolated bootstrap and applies a boundary to its runtime role", () => {
+  const roles = Object.values(template.findResources("AWS::IAM::Role"));
+  assert.ok(roles.length > 0);
+  for (const role of roles) assert.ok(JSON.stringify(role.Properties.PermissionsBoundary).includes(BOUNDARY_POLICY_NAME));
+  assert.equal(template.toJSON().Parameters.BootstrapVersion.Default, `/cdk-bootstrap/${BOOTSTRAP_QUALIFIER}/version`);
+});
 
 test("the public API has exactly one route: POST /v1/feature-requests", () => {
   template.resourceCountIs("AWS::ApiGatewayV2::Route", 1);

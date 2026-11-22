@@ -64,7 +64,7 @@ The check builds the Lambda with its pinned AWS SDK dependency, tests validation
 
 ## Deploy to your AWS account
 
-Use an IAM user/role profile with permission to bootstrap CDK and create CloudFormation, IAM, API Gateway, Lambda, DynamoDB, CloudWatch, and log resources. Keep credentials in your AWS CLI setup; never put them in this repository. Root-account access keys are unnecessary.
+Keep credentials in your AWS CLI setup; never put them in this repository. Root-account access keys are unnecessary. An administrator must first create and attach the scoped deployment policy described below; the deployment user cannot grant itself permissions.
 
 ```sh
 export AWS_PROFILE=tempo
@@ -75,8 +75,30 @@ cd backend
 npm ci
 npm run build
 
-# One-time CDK deployment tooling setup for this account and region.
-npm run cdk -- bootstrap
+TEMPO_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+npm run prepare-access -- "$TEMPO_ACCOUNT_ID" "$AWS_REGION"
+```
+
+The last command only writes local files; it does not change AWS permissions. In the AWS console, signed in as an account administrator:
+
+1. Open **IAM → Policies → Create policy → JSON** and paste `backend/cdk.out/deployment-policy.json`.
+2. Name the policy **TempoFeedbackDeploymentBoundary** exactly, then create it.
+3. Open **IAM → Users → your deployment user → Permissions → Add permissions → Attach policies directly**. Select **TempoFeedbackDeploymentBoundary** and add it as a permission policy.
+
+This policy grants deployment and owner review permissions for Tempo's stacks, tables, functions, logs, alarms, IAM roles/policies, and dedicated CDK asset resources. HTTP API and API Gateway tag management covers the selected region because API IDs are assigned by AWS; some validation, authentication, and listing operations require `Resource: "*"`. It is not an account administrator policy. It does not grant IAM user management, removal of role boundaries, or modification of the boundary policy itself. Existing permissions on the deployment user are left unchanged.
+
+The policy also acts as a permissions ceiling on **all** newly created bootstrap roles and the Lambda runtime role. The runtime's actual permissions remain only DynamoDB conditional writes and logging. The generated bootstrap template replaces CDK's default administrator execution policy and uses S3-managed encryption for the private artifact bucket.
+
+After the administrator attaches the policy, use the dedicated Tempo bootstrap:
+
+```sh
+TEMPO_BOUNDARY_ARN="arn:aws:iam::${TEMPO_ACCOUNT_ID}:policy/TempoFeedbackDeploymentBoundary"
+npm run cdk -- bootstrap "aws://${TEMPO_ACCOUNT_ID}/${AWS_REGION}" \
+  --template cdk.out/tempo-bootstrap.json \
+  --qualifier tempofb \
+  --custom-permissions-boundary TempoFeedbackDeploymentBoundary \
+  --cloudformation-execution-policies "$TEMPO_BOUNDARY_ARN" \
+  --bootstrap-kms-key-id AWS_MANAGED_KEY
 
 # Review the new resources and IAM changes before deployment.
 npm run cdk -- diff -c stage=prod
@@ -84,6 +106,8 @@ npm run cdk -- deploy -c stage=prod --outputs-file cdk-outputs.prod.json
 ```
 
 `stage` must be `dev` or `prod`; it defaults to `dev`. Each stage gets a separate stack, table, function, and URL. There is no custom domain, VPC, NAT gateway, server, or account/auth service to operate. Output files and CDK build artifacts are git-ignored.
+
+The `npm run cdk` command selects **TempoCDKToolkit**, with qualifier **tempofb**, so other applications' CDK bootstrap stacks are untouched. Use the generated custom bootstrap template rather than the stock CDK template; the generated variant requires the boundary on every role. `prepare-access` currently supports US commercial regions. The dedicated bootstrap creates a private file bucket and the standard, initially empty CDK container repository; this API uses only file assets.
 
 The deployment outputs include:
 

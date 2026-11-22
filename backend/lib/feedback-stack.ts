@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
-import { CfnOutput, Duration, RemovalPolicy, Stack, type StackProps } from "aws-cdk-lib";
+import { CfnOutput, DefaultStackSynthesizer, Duration, PermissionsBoundary, RemovalPolicy, Stack, type IStackSynthesizer, type StackProps } from "aws-cdk-lib";
+import { BOOTSTRAP_QUALIFIER, BOUNDARY_POLICY_NAME } from "./deployment-access.js";
 import * as apigateway from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
@@ -11,7 +12,13 @@ import type { Construct } from "constructs";
 
 export class FeedbackStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
-    super(scope, id, props);
+    super(scope, id, {
+      ...props,
+      // CDK's optional qualifier types disagree under exactOptionalPropertyTypes;
+      // this instance always has an explicit qualifier.
+      synthesizer: new DefaultStackSynthesizer({ qualifier: BOOTSTRAP_QUALIFIER }) as IStackSynthesizer,
+      permissionsBoundary: PermissionsBoundary.fromName(BOUNDARY_POLICY_NAME),
+    });
 
     const table = new dynamodb.Table(this, "Requests", {
       partitionKey: { name: "requestId", type: dynamodb.AttributeType.STRING },

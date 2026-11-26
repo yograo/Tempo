@@ -29,6 +29,13 @@ test("duplicate writes succeed without a follow-up read", async () => {
   assert.equal(calls, 1);
 });
 
+test("includes a supplied reply email in the private item", async () => {
+  let item: PutItemCommand["input"]["Item"];
+  const write = createWriter({ send: async (command) => { item = command.input.Item; } }, "private-table");
+  await write({ ...request, email: "reply+tempo@example.com" });
+  assert.deepEqual(item?.email, { S: "reply+tempo@example.com" });
+});
+
 test("other DynamoDB failures propagate so clients can retry", async () => {
   const unavailable = new Error("DynamoDB unavailable");
   const write = createWriter({ send: async () => { throw unavailable; } }, "private-table");

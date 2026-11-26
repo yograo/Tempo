@@ -9,6 +9,7 @@ export interface FeatureRequest {
   title: string;
   description: string;
   appVersion: string;
+  email?: string;
   createdAt: string;
   status: "new";
 }
@@ -19,7 +20,7 @@ export interface SubmissionDependencies {
   reportWriteFailure: () => void;
 }
 
-const fields = new Set(["requestId", "title", "description", "appVersion"]);
+const fields = new Set(["requestId", "title", "description", "appVersion", "email"]);
 const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 // Permit newlines/tabs in descriptions, but reject other control characters.
 const disallowedControls = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u;
@@ -41,6 +42,23 @@ function cleanText(value: unknown, min: number, max: number): string | undefined
   const clean = value.trim();
   const length = Array.from(clean).length;
   return length >= min && length <= max ? clean : undefined;
+}
+
+// Accept common ASCII mailboxes (including plus addressing), without claiming
+// to verify ownership or deliverability. Only the domain is case-normalized.
+function cleanEmail(value: string): string | undefined {
+  if (/[\u0000-\u001f\u007f]/u.test(value)) return undefined;
+  const email = value.trim();
+  if (email.length > 254) return undefined;
+  const parts = email.split("@");
+  if (parts.length !== 2) return undefined;
+  const [local = "", domain = ""] = parts;
+  if (!local || local.length > 64 || !/^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+$/.test(local) ||
+      local.startsWith(".") || local.endsWith(".") || local.includes("..")) return undefined;
+  const labels = domain.split(".");
+  if (labels.length < 2 || labels.some((label) => label.length > 63 ||
+      !/^[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/.test(label))) return undefined;
+  return `${local}@${domain.toLowerCase()}`;
 }
 
 export function createSubmitHandler(dependencies: SubmissionDependencies) {
@@ -76,7 +94,7 @@ export function createSubmitHandler(dependencies: SubmissionDependencies) {
     }
     const input = data as Record<string, unknown>;
     if (Object.keys(input).some((field) => !fields.has(field))) {
-      return error(400, "invalid_request", "Only requestId, title, description, and appVersion are accepted.");
+      return error(400, "invalid_request", "Only requestId, title, description, appVersion, and optional email are accepted.");
     }
     if (typeof input.requestId !== "string" || !uuidV4.test(input.requestId)) {
       return error(400, "invalid_request", "requestId must be a randomly generated UUID v4.");
@@ -90,9 +108,20 @@ export function createSubmitHandler(dependencies: SubmissionDependencies) {
     if (typeof input.appVersion !== "string" || input.appVersion.length > 32 || !/^\d+(?:\.\d+){0,2}$/.test(input.appVersion)) {
       return error(400, "invalid_request", "appVersion must be a version such as 1.0 or 1.2.3 (at most 32 characters).");
     }
+    let email: string | undefined;
+    if (input.email !== undefined) {
+      if (typeof input.email !== "string" || /[\u0000-\u001f\u007f]/u.test(input.email)) {
+        return error(400, "invalid_request", "email must be a valid reply address or left blank.");
+      }
+      if (input.email.trim()) {
+        email = cleanEmail(input.email);
+        if (!email) return error(400, "invalid_request", "email must be a valid reply address of at most 254 characters.");
+      }
+    }
     const requestId = input.requestId.toLowerCase();
     try {
       await dependencies.write({ requestId, title, description, appVersion: input.appVersion,
+        ...(email ? { email } : {}),
         createdAt: dependencies.now().toISOString(), status: "new" });
     } catch {
       // Never log payloads, SDK exceptions, identifiers, or source IP addresses.

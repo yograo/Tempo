@@ -72,7 +72,7 @@ test("accepts API Gateway base64 bodies and Content-Type charset/casing", async 
 
 for (const [name, value] of Object.entries({
   null: null, array: [], string: "hello", number: 42,
-  missing: {}, unknownField: { ...payload(), email: "unneeded@example.com" },
+  missing: {}, unknownField: { ...payload(), phone: "unneeded" },
   clientTimestamp: { ...payload(), createdAt: timestamp }, clientStatus: { ...payload(), status: "approved" },
   badID: { ...payload(), requestId: "not-a-uuid" }, nonV4ID: { ...payload(), requestId: "00000000-0000-1000-8000-000000000000" },
   blankTitle: { ...payload(), title: "   " }, longTitle: { ...payload(), title: "x".repeat(121) },
@@ -85,6 +85,36 @@ for (const [name, value] of Object.entries({
   test(`rejects ${name} without writing`, async () => {
     const { handler, records } = setup();
     assert.equal((await handler(event(value))).statusCode, 400);
+    assert.equal(records.size, 0);
+  });
+}
+
+test("stores optional reply email privately, trims it, and normalizes only the domain", async () => {
+  const { handler, records } = setup();
+  const input = { ...payload(), email: "  Ada+tempo@EXAMPLE.test  " };
+  const result = await handler(event(input));
+  assert.equal(result.statusCode, 202);
+  assert.equal(records.get(input.requestId)?.email, "Ada+tempo@example.test");
+  assert.deepEqual(JSON.parse(result.body!), { requestId: input.requestId, status: "received" });
+  await handler(event({ ...input, email: "someone-else@example.com" }));
+  assert.equal(records.get(input.requestId)?.email, "Ada+tempo@example.test");
+});
+
+test("omits blank optional emails", async () => {
+  const { handler, records } = setup();
+  const input = { ...payload(), email: "   " };
+  assert.equal((await handler(event(input))).statusCode, 202);
+  assert.equal(Object.hasOwn(records.get(input.requestId)!, "email"), false);
+});
+
+for (const email of [null, 42, [], "missing-at", "a@@example.com", "a@.test", "a@-example.test",
+  "a@example..test", ".a@example.com", "a..b@example.com", "a.@example.com", "a b@example.com",
+  "a@example.com\r\nBcc: other@example.com", "\ta@example.com", "é@example.com",
+  `${"a".repeat(65)}@example.com`, `a@${"b".repeat(64)}.com`,
+  `${"a".repeat(64)}@${"b".repeat(63)}.${"c".repeat(63)}.${"d".repeat(63)}`]) {
+  test(`rejects invalid email ${JSON.stringify(email)} without writing`, async () => {
+    const { handler, records } = setup();
+    assert.equal((await handler(event({ ...payload(), email }))).statusCode, 400);
     assert.equal(records.size, 0);
   });
 }

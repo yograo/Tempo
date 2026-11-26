@@ -12,7 +12,8 @@ if (url.protocol !== "https:" || !url.hostname.endsWith(".amazonaws.com") || url
 }
 
 const payload = { requestId: randomUUID(), title: "API deployment smoke test",
-  description: "Automated test submission. The owner can remove this entry after deployment.", appVersion: "1.0" };
+  description: "Automated test submission. The owner can remove this entry after deployment.", appVersion: "1.0",
+  ...(process.argv.includes("--with-email") ? { email: "tempo-api-test@example.com" } : {}) };
 
 async function send(body, method = "POST") {
   // Respect the deliberately low public request rate.
@@ -29,9 +30,10 @@ const first = await send(payload);
 assert.equal(first.status, 202);
 assert.deepEqual(first.body, { requestId: payload.requestId, status: "received" });
 assert.deepEqual(await send(payload), first, "A retry must return the same receipt.");
-assert.deepEqual(await send({ ...payload, title: "Must not overwrite the original" }), first);
+assert.deepEqual(await send({ ...payload, title: "Must not overwrite the original", email: "different@example.com" }), first);
 const invalid = await send({ ...payload, requestId: randomUUID(), title: "" });
 assert.equal(invalid.status, 400);
+assert.equal((await send({ ...payload, requestId: randomUUID(), email: "not-an-email" })).status, 400);
 const read = await send(undefined, "GET");
 assert.ok([403, 404, 405].includes(read.status), "There must be no public read endpoint.");
 console.log(`Smoke test passed. Owner verification requestId: ${payload.requestId}`);

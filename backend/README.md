@@ -135,6 +135,10 @@ npm run smoke -- 'https://API_ID.execute-api.REGION.amazonaws.com/v1/feature-req
 
 Each run intentionally writes **one labeled test request**, retries it with changed text and email, checks validation, and checks that GET doesn't expose data. Using your AWS identity, verify that the reported request ID has the original title and email in DynamoDB. The test row can be deleted through your authorized AWS identity afterwards; the API cannot delete it.
 
+## Hosted owner dashboard
+
+The optional [owner dashboard](DASHBOARD.md) adds a private website with Cognito sign-in, authenticator MFA, request search and filters, status updates, and manual reply links. It imports the existing table and keeps the public submission API separate. See that guide for the policy update, deployment commands, owner account setup, and verification.
+
 ## Private owner review
 
 Sign in to your AWS account and open **DynamoDB → Tables → the output table name → Explore table items**. If your identity needs permission, attach the output `OwnerReaderPolicyArn` only to your personal IAM identity. It grants table listing plus `DescribeTable`, `GetItem`, `Query`, and `Scan` on this table. Existing AWS account administrators retain their normal access.

@@ -20,6 +20,11 @@ export function deploymentPolicy(account: string, region: string) {
       allow(["s3:*"], [bucket, `${bucket}/*`]),
       allow(["ecr:*"], [arn("ecr", `repository/cdk-${BOOTSTRAP_QUALIFIER}-container-assets-${account}-${region}`)]),
       allow(["ssm:GetParameter", "ssm:GetParameters", "ssm:PutParameter", "ssm:DeleteParameter", "ssm:AddTagsToResource", "ssm:RemoveTagsFromResource"], [arn("ssm", `parameter/cdk-bootstrap/${BOOTSTRAP_QUALIFIER}/version`)]),
+      // Cognito assigns pool IDs. Creation requires the Tempo tag; subsequent
+      // administration is limited to pools carrying that tag in this account/region.
+      allow(["cognito-idp:CreateUserPool"], ["*"], { StringEquals: { "aws:RequestTag/Application": "TempoFeatureRequests", "aws:RequestedRegion": region } }),
+      allow(["cognito-idp:DescribeUserPoolDomain"], ["*"], { StringEquals: { "aws:RequestedRegion": region } }),
+      allow(["cognito-idp:DescribeUserPool", "cognito-idp:UpdateUserPool", "cognito-idp:DeleteUserPool", "cognito-idp:*UserPoolClient", "cognito-idp:*UserPoolDomain", "cognito-idp:*Group", "cognito-idp:GetUserPoolMfaConfig", "cognito-idp:SetUserPoolMfaConfig", "cognito-idp:TagResource", "cognito-idp:UntagResource", "cognito-idp:ListTagsForResource"], [arn("cognito-idp", "userpool/*")], { StringEquals: { "aws:ResourceTag/Application": "TempoFeatureRequests" } }),
       allow(["lambda:*"], [arn("lambda", "function:TempoFeatureRequests-*")]),
       allow(["dynamodb:*"], [arn("dynamodb", "table/TempoFeatureRequests-*")]),
       allow(["logs:*"], [arn("logs", "log-group:TempoFeatureRequests-*")]),

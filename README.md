@@ -88,4 +88,4 @@ Physical-device notification audio, Focus behavior, and haptics require device v
 
 ## Feature-request backend
 
-The [backend](backend/README.md) implements a public `POST /v1/feature-requests` API on AWS. App users submit requests with a reply email; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is available under Workout settings → Help shape Tempo → Request a feature.
+The [backend](backend/README.md) implements a public `POST /v1/feature-requests` API on AWS. App users submit requests with a reply email; reviewing stored requests requires your AWS identity or an authorized owner login in the optional [web dashboard](backend/DASHBOARD.md). It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is available under Workout settings → Help shape Tempo → Request a feature.

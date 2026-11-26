@@ -49,6 +49,8 @@ Local notifications provide interval and completion alerts while the app is susp
 | `Tests/TempoCoreTests/`, `TempoUITests/` | Core and simulator UI tests |
 | `backend/src/submit.ts`, `storage.ts`, `handler.ts` | Server validation, conditional DynamoDB writes, Lambda wiring |
 | `backend/lib/feedback-stack.ts` | CDK API, Lambda, table, runtime permissions, alarm |
+| `backend/dashboard/`, `backend/src/site-handler.ts` | Owner website, PKCE sign-in, local-only synthetic preview |
+| `backend/src/admin*.ts`, `backend/lib/dashboard-stack.ts` | Authenticated admin API and isolated dashboard/auth stack |
 | `backend/lib/deployment-access.ts` | Scoped deployer policy and customized CDK bootstrap |
 | `backend/scripts/` | WASM bundling, access-file generation, live smoke test |
 | `.github/workflows/backend.yml` | Backend CI: install, checks, runtime dependency audit |
@@ -114,7 +116,7 @@ Bundle identifiers are `com.yograo.tempo` and `com.yograo.tempo.activity`. Confi
 
 ## Backend contract and security
 
-The only public route is `POST /v1/feature-requests`, using HTTPS and JSON. All five input fields are required:
+The public submission route is `POST /v1/feature-requests`, using HTTPS and JSON. All five input fields are required:
 
 | Field | Validation |
 | --- | --- |
@@ -136,9 +138,21 @@ A new submission or duplicate retry returns only `202 {"requestId":"...","status
 - The API's global throttle is approximately 1 request/second with burst 5. Table maximum read/write request units are 25 each; Lambda has 128 MiB and a five-second timeout. These are not a hard spending cap or comprehensive abuse prevention.
 - The iOS client uses an ephemeral session, has no embedded AWS credentials/shared API key, and refuses redirects. Keep request contents out of networking logs and caches.
 
+### Owner dashboard
+
+See [backend/DASHBOARD.md](backend/DASHBOARD.md) for setup and operation. The new `TempoFeatureRequests-STAGE-Dashboard` stack is enabled only with `-c dashboardTable=EXISTING_TABLE_NAME`; select this stack explicitly when deploying it. It imports the table by name and must never replace the production submission stack/table. The dashboard deployed successfully in Ohio on 2026-11-26 at https://yvofsdc4wb.execute-api.us-east-2.amazonaws.com/. The reviewed Cognito policy is applied (default version v5). The owner account is confirmed and enabled, and its `TempoOwners` membership was verified. The first login was denied because the group was empty; membership is now assigned, and the owner must sign in again to obtain a token with that group. Successful dashboard access after this change remains to be confirmed. Live anonymous/invalid-token checks passed, and IAM-invoked deployed-handler tests passed for group rejection, listing, status updates and stale edits; the temporary sample row was removed.
+
+The website is served by a separate Lambda/HTTP API. Its role has no data access. Cognito uses a closed username pool, required authenticator TOTP MFA, authorization-code PKCE, and administrator-only recovery. Only access tokens with exact `TempoOwners` membership may invoke admin storage; API Gateway verifies JWT issuer/client/expiry and the `openid` scope. Owner accounts must be created deliberately with invitations suppressed; do not send emails or retrieve owner credentials. The owner enrolls MFA manually.
+
+Admin permissions are only `Scan`/`UpdateItem` on the existing table. Reads are bounded to 50 rows/1 MiB per page; the client filters/sorts/counts loaded rows and explicitly marks partial results. Scan pagination is not a point-in-time snapshot. Status changes allow `new`, `planned`, `in_progress`, `implemented`, `declined`, compare the current revision atomically (missing revision = 0), and update only status/revision/updatedAt. A `409` requires refresh. Preserve submitted text/email and support older records without email. There is no dashboard delete route or automatic email sending.
+
+Access tokens and request data stay in browser memory; only the one-time PKCE transaction is placed in session storage. Tokens expire after ten minutes. Offline JWT validation means revocation, sign-out or group changes can take up to that expiry to remove API access. The site uses no-store responses, strict CSP, text-only rendering of customer content, no third-party scripts and no payload/access logging. Never screenshot real requests. `npm run preview:dashboard` serves synthetic data only on `127.0.0.1:4173`; the deployed config always disables preview mode.
+
+The generated deployment policy adds Cognito creation gated by the Tempo tag and management of tagged pools in the assigned account/region. Updating the boundary is an owner action, not an agent credential escalation. Use a freshly named generated policy file, and verify the saved default policy version. Do not re-bootstrap for this update.
+
 ### Discussed but not implemented
 
-Apple App Attest, per-install quotas, user login, verified email ownership, an owner web dashboard, and automatic email replies are not implemented. Do not report them as existing protections. App Attest requires client and server verification work, a deliberate Apple signing-team choice, and physical-device testing. TestFlight/App Store attestation uses production even when development used the sandbox. Merely adding an entitlement does not protect this API.
+Apple App Attest, per-install quotas, iOS user login, verified email ownership, and automatic email replies are not implemented. The optional owner web dashboard is implemented separately; verify its deployment state before claiming it is live. Do not report them as existing protections. App Attest requires client and server verification work, a deliberate Apple signing-team choice, and physical-device testing. TestFlight/App Store attestation uses production even when development used the sandbox. Merely adding an entitlement does not protect this API.
 
 ## Building and checking the backend
 
@@ -151,7 +165,7 @@ npm run check
 npm audit --omit=dev
 ```
 
-`check` compiles TypeScript, bundles Lambda, runs tests, and synthesizes CDK. The last verified baseline is **70 tests**. Tests cover validation, required email, conditional writes, cold-start loading of the bundle, and infrastructure permissions.
+`check` compiles TypeScript, bundles Lambda, runs tests, and synthesizes CDK. The last verified baseline is **93 tests**. Tests cover validation, required email, conditional writes, cold-start loading of the bundle, and infrastructure permissions.
 
 The bundler is `esbuild-wasm`: native esbuild was killed on the original machine. Lambda is a bundled CommonJS artifact with its own `dist/lambda/package.json`; retain the cold-start test. CDK has a documented build-only `minimatch` advisory, absent from the Lambda bundle. Do not blindly run `npm audit fix --force`: the suggested downgrade previously broke CDK. Respect any configured dependency release-age delay rather than overriding it. npm may also warn about the pinned Smithy version’s custom-logger redaction bug; this backend has no custom AWS SDK logger. Reassess dependency upgrades separately and do not introduce request logging.
 

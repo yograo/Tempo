@@ -11,7 +11,7 @@ const policy = deploymentPolicy(account, region);
 test("deployment policy fits IAM limits and restricts mutation grants to project resources", () => {
   assert.ok(JSON.stringify(policy).length <= 6144);
   const unrestricted = policy.Statement.filter((s) => s.Resource.includes("*"));
-  assert.equal(unrestricted.length, 1);
+  assert.equal(unrestricted.length, 3);
   assert.deepEqual(unrestricted[0]!.Action, ["cloudformation:ValidateTemplate", "cloudformation:GetTemplateSummary", "dynamodb:ListTables", "logs:DescribeLogGroups", "ecr:GetAuthorizationToken", "sts:GetCallerIdentity"]);
   assert.equal(policy.Statement.some((s) => s.Action.includes("*")), false);
   assert.equal(JSON.stringify(policy).includes("AdministratorAccess"), false);
@@ -57,4 +57,13 @@ test("policy generation rejects malformed account and unsupported region inputs"
   assert.throws(() => deploymentPolicy("*", region));
   assert.throws(() => deploymentPolicy(account, "us-west-2:*"));
   assert.throws(() => scopedBootstrap({ Resources: {} }));
+});
+
+
+test("Cognito creation is tagged and pool administration is limited to Tempo in the chosen region", () => {
+  const create = policy.Statement.find((s) => s.Action.includes("cognito-idp:CreateUserPool"))!;
+  assert.deepEqual(create.Condition, { StringEquals: { "aws:RequestTag/Application": "TempoFeatureRequests", "aws:RequestedRegion": region } });
+  const manage = policy.Statement.find((s) => s.Action.includes("cognito-idp:UpdateUserPool"))!;
+  assert.deepEqual(manage.Resource, [`arn:aws:cognito-idp:${region}:${account}:userpool/*`]);
+  assert.deepEqual(manage.Condition, { StringEquals: { "aws:ResourceTag/Application": "TempoFeatureRequests" } });
 });

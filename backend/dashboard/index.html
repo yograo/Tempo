@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Tempo · Feature requests</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="/" aria-label="Tempo dashboard home"><span class="logo" aria-hidden="true">t</span>tempo<span class="brand-divider"></span><span class="brand-label">OWNER WORKSPACE</span></a>
+    <div class="header-actions"><span class="private"><span aria-hidden="true">●</span> Private dashboard</span><button id="sign-out" class="text-button" hidden>Sign out</button></div>
+  </header>
+  <div id="demo-banner" class="demo-banner" hidden>Preview with sample requests · Changes stay in this local session.</div>
+  <main>
+    <section id="login" class="login-card" aria-labelledby="login-title">
+      <span class="eyebrow">A LITTLE FEEDBACK. A BETTER TEMPO.</span>
+      <h1 id="login-title">Build what matters.</h1>
+      <p>A private place to read ideas from Tempo users,<br class="desktop-break"> decide what’s next, and close the loop.</p>
+      <button id="sign-in" class="primary" disabled>Loading…</button>
+      <p class="login-note">Owner access only. Sign in with your password<br class="desktop-break"> and authenticator code.</p>
+    </section>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <section id="workspace" hidden aria-label="Feature request workspace">
+      <div class="page-heading"><div><span class="eyebrow">LISTEN. PLAN. IMPROVE.</span><h1>Feature requests<span class="heading-dot">.</span></h1><p>Small ideas for a better workout.</p></div><button id="refresh" class="secondary">↻ Refresh</button></div>
+      <div id="stats" class="stats" aria-label="Request counts"></div>
+      <div class="inbox">
+        <section class="request-pane" aria-label="Request inbox">
+          <div class="inbox-title"><h2>The inbox</h2><span id="loaded-label" class="muted"></span></div>
+          <div class="filters"><label class="search-label"><span class="sr-only">Search loaded requests</span><input id="search" type="search" placeholder="Search ideas, details, or email…" autocomplete="off"></label><label><span class="sr-only">Filter by status</span><select id="filter"><option value="all">All statuses</option><option value="new">New</option><option value="planned">Planned</option><option value="in_progress">In progress</option><option value="implemented">Implemented</option><option value="declined">Declined</option></select></label></div>
+          <p id="scope" class="scope"></p>
+          <div id="request-list" class="request-list"></div>
+          <div class="list-footer"><span id="result-count" class="muted"></span><button id="load-more" class="secondary" hidden>Load more</button></div>
+        </section>
+        <aside id="detail" class="detail" aria-label="Request details" aria-live="polite"></aside>
+      </div>
+      <footer>Made for a little more momentum. <span>Tempo · Owner workspace</span></footer>
+    </section>
+  </main>
+</body>
+</html>

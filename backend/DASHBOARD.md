@@ -4,7 +4,9 @@ A private website for reviewing the existing feature-request table: search loade
 
 [Desktop preview with synthetic requests](../design/owner-dashboard.png).
 
-Implementation verification: 93 automated tests pass; desktop rendering, search, and a status save were checked against the local preview. Managed Chrome then blocked the preview URL, so additional browser checks (including mobile and live Cognito) remain pending. No dashboard resources have been deployed yet.
+Deployed in Ohio on 2026-11-26: [Tempo owner dashboard](https://yvofsdc4wb.execute-api.us-east-2.amazonaws.com/). The owner still needs to create a username, join `TempoOwners`, and enroll an authenticator using the setup below.
+
+Verification: 93 automated tests and GitHub CI pass. Live checks confirmed site assets/security headers and `401` responses for anonymous/invalid-token reads and edits. IAM-invoked checks of the deployed admin Lambda confirmed non-owner/ID-token rejection, listing, conditional status updates, stale-edit conflicts, and preservation of admin changes through public submission retries. The temporary sample record was removed. These direct Lambda checks do not establish the positive Cognito/JWT browser path; owner sign-in and MFA enrollment remain to be verified. Desktop rendering, search and a status save were checked against the local preview. Managed Chrome subsequently blocked that URL; mobile and further automated browser checks remain pending.
 
 ## Architecture and access
 
@@ -54,7 +56,7 @@ Tests cover unauthorized and non-owner rejection, access-token type, request val
 
 ## Deploy in Ohio
 
-The deployment policy needs Cognito permissions in addition to the existing services. Generate the concrete policy locally first:
+The production policy already includes Cognito permissions (verified default version v5 on 2026-11-26). For a new account or a deliberate permission update, generate the concrete policy locally first:
 
 ```sh
 export AWS_PROFILE=tempo

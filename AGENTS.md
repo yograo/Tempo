@@ -116,7 +116,7 @@ Bundle identifiers are `com.yograo.tempo` and `com.yograo.tempo.activity`. Confi
 
 ## Backend contract and security
 
-The only public route is `POST /v1/feature-requests`, using HTTPS and JSON. All five input fields are required:
+The public submission route is `POST /v1/feature-requests`, using HTTPS and JSON. All five input fields are required:
 
 | Field | Validation |
 | --- | --- |
@@ -140,7 +140,7 @@ A new submission or duplicate retry returns only `202 {"requestId":"...","status
 
 ### Owner dashboard
 
-See [backend/DASHBOARD.md](backend/DASHBOARD.md) for setup and operation. The new `TempoFeatureRequests-STAGE-Dashboard` stack is enabled only with `-c dashboardTable=EXISTING_TABLE_NAME`; select this stack explicitly when deploying it. It imports the table by name and must never replace the production submission stack/table. Initial dashboard deployment is pending the owner's Cognito policy update; verify CloudFormation outputs before claiming a live URL.
+See [backend/DASHBOARD.md](backend/DASHBOARD.md) for setup and operation. The new `TempoFeatureRequests-STAGE-Dashboard` stack is enabled only with `-c dashboardTable=EXISTING_TABLE_NAME`; select this stack explicitly when deploying it. It imports the table by name and must never replace the production submission stack/table. The dashboard deployed successfully in Ohio on 2026-11-26 at https://yvofsdc4wb.execute-api.us-east-2.amazonaws.com/. The reviewed Cognito policy is applied (default version v5). Owner-account creation/MFA enrollment and positive browser sign-in verification remain pending; verify their actual state rather than assuming the account exists. Live anonymous/invalid-token checks passed, and IAM-invoked deployed-handler tests passed for group rejection, listing, status updates and stale edits; the temporary sample row was removed.
 
 The website is served by a separate Lambda/HTTP API. Its role has no data access. Cognito uses a closed username pool, required authenticator TOTP MFA, authorization-code PKCE, and administrator-only recovery. Only access tokens with exact `TempoOwners` membership may invoke admin storage; API Gateway verifies JWT issuer/client/expiry and the `openid` scope. Owner accounts must be created deliberately with invitations suppressed; do not send emails or retrieve owner credentials. The owner enrolls MFA manually.
 

@@ -4,9 +4,9 @@ A private website for reviewing the existing feature-request table: search loade
 
 [Desktop preview with synthetic requests](../design/owner-dashboard.png).
 
-Deployed in Ohio on 2026-11-26: [Tempo owner dashboard](https://yvofsdc4wb.execute-api.us-east-2.amazonaws.com/). The owner still needs to create a username, join `TempoOwners`, and enroll an authenticator using the setup below.
+Deployed in Ohio on 2026-11-26: [Tempo owner dashboard](https://yvofsdc4wb.execute-api.us-east-2.amazonaws.com/). The owner account is confirmed and enabled, with verified `TempoOwners` membership. Sign in again after a membership change to obtain an updated token. The setup below remains the procedure for provisioning a new owner login.
 
-Verification: 93 automated tests and GitHub CI pass. Live checks confirmed site assets/security headers and `401` responses for anonymous/invalid-token reads and edits. IAM-invoked checks of the deployed admin Lambda confirmed non-owner/ID-token rejection, listing, conditional status updates, stale-edit conflicts, and preservation of admin changes through public submission retries. The temporary sample record was removed. These direct Lambda checks do not establish the positive Cognito/JWT browser path; owner sign-in and MFA enrollment remain to be verified. Desktop rendering, search and a status save were checked against the local preview. Managed Chrome subsequently blocked that URL; mobile and further automated browser checks remain pending.
+Verification: 93 automated tests and GitHub CI pass. Live checks confirmed site assets/security headers and `401` responses for anonymous/invalid-token reads and edits. IAM-invoked checks of the deployed admin Lambda confirmed non-owner/ID-token rejection, listing, conditional status updates, stale-edit conflicts, and preservation of admin changes through public submission retries. The temporary sample record was removed. These direct Lambda checks do not establish the positive Cognito/JWT browser path; successful owner access after assigning group membership remains to be confirmed. Desktop rendering, search and a status save were checked against the local preview. Managed Chrome subsequently blocked that URL; mobile and further automated browser checks remain pending.
 
 ## Architecture and access
 

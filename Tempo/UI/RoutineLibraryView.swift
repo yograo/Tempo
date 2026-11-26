@@ -12,9 +12,12 @@ struct RoutineLibraryView: View {
                         TempoMark()
                         Text("tempo").font(.system(size: 27, weight: .bold, design: .rounded)).tracking(-1)
                         Spacer()
-                        Text("MOVE WITH INTENTION")
-                            .font(.system(size: 9, weight: .bold, design: .monospaced)).tracking(1.1)
-                            .foregroundStyle(TempoTheme.muted)
+                        NavigationLink { WorkoutHistoryView() } label: {
+                            Image(systemName: "clock.arrow.circlepath").font(.system(size: 20)).frame(width: 44, height: 44)
+                        }.accessibilityLabel("Workout history").accessibilityIdentifier("workout-history")
+                        NavigationLink { WorkoutSettingsView() } label: {
+                            Image(systemName: "slider.horizontal.3").font(.system(size: 20)).frame(width: 44, height: 44)
+                        }.accessibilityLabel("Workout settings").accessibilityIdentifier("workout-settings")
                     }.padding(.top, 12)
 
                     VStack(alignment: .leading, spacing: 13) {

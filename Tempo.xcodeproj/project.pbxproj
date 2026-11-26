@@ -25,6 +25,26 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "4D627A4176420611426B7756";
 		};
+		"EEE87285CC5542D5C0536F57" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/App/WorkoutStore.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"FB4C2B7B6B0A6568FD74ECA5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "EEE87285CC5542D5C0536F57";
+		};
+		"DFE4712F62FD8B4504AB96C8" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/Audio/SpokenCuePlayer.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"003FE5D1054F00319BD5BBEE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DFE4712F62FD8B4504AB96C8";
+		};
 		"71C2C5EB27126108F88F380C" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -55,6 +75,26 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "3F09E9F668BF5E3A97E3A301";
 		};
+		"4A99136A77400D7CFF732E9E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/Core/WorkoutCues.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"C522E1B25553825F02EE7AD5" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "4A99136A77400D7CFF732E9E";
+		};
+		"B335D8A971A6B0A7CCE576CE" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/Core/WorkoutHistory.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"CA730790D01F9984B5B73386" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "B335D8A971A6B0A7CCE576CE";
+		};
 		"F89AD87DAE2CF0B62206FB12" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -65,6 +105,16 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "F89AD87DAE2CF0B62206FB12";
 		};
+		"56CDCA551A8BE4955D8AF605" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/Timer/WorkoutAlerts.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"80FC163B22CF86075AC2F506" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "56CDCA551A8BE4955D8AF605";
+		};
 		"8F88A6617436D05EBDF1E0B8" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -74,6 +124,16 @@
 		"7DCC408F8EF048AF370811DA" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "8F88A6617436D05EBDF1E0B8";
+		};
+		"1958CB1C64EE1F5A2FD363F0" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/Timer/WorkoutLiveActivity.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"1B20F6735DDDE15CAB36EF49" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1958CB1C64EE1F5A2FD363F0";
 		};
 		"F441721CEB728D91C41BD3F5" = {
 			"isa" = "PBXFileReference";
@@ -115,6 +175,26 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "4F9AF3D95664CEF853BA004F";
 		};
+		"D0CE7C45D2F8E6287493D105" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/UI/WorkoutHistoryView.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"69354441F69F53927308C269" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "D0CE7C45D2F8E6287493D105";
+		};
+		"666651AC9F45595CA5F86E22" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Tempo/UI/WorkoutSettingsView.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"A218B362500771B5299CE581" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "666651AC9F45595CA5F86E22";
+		};
 		"5D8F90F6BA5870676BDA3C06" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.swift";
@@ -124,6 +204,16 @@
 		"FCAAF2FA4BD1C9075C200CA2" = {
 			"isa" = "PBXBuildFile";
 			"fileRef" = "5D8F90F6BA5870676BDA3C06";
+		};
+		"7D578DCBEE66CA99797F61B4" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Shared/TempoActivityAttributes.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"20A7FFFA562CC9E61B9A0699" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "7D578DCBEE66CA99797F61B4";
 		};
 		"CE7754E714B20112E1F6E910" = {
 			"isa" = "PBXFileReference";
@@ -167,7 +257,7 @@
 		};
 		"4B55F25F7515DEAA5582CDE0" = {
 			"isa" = "PBXGroup";
-			"children" = ("D449729E1DC4D6D9ACB9F70E", "4D627A4176420611426B7756", "71C2C5EB27126108F88F380C", "18D979EE8A736381221D01E2", "3F09E9F668BF5E3A97E3A301", "F89AD87DAE2CF0B62206FB12", "8F88A6617436D05EBDF1E0B8", "F441721CEB728D91C41BD3F5", "B6F027505D2B4563CBA560DE", "A1D8799762C2E482DD794535", "4F9AF3D95664CEF853BA004F", "5D8F90F6BA5870676BDA3C06", "CE7754E714B20112E1F6E910", "CE0B5D1FCD0459F4E623142E", "9083C0037F1DB0A218EAE969", "16544079DB5395FD73C81E94");
+			"children" = ("D449729E1DC4D6D9ACB9F70E", "4D627A4176420611426B7756", "EEE87285CC5542D5C0536F57", "DFE4712F62FD8B4504AB96C8", "71C2C5EB27126108F88F380C", "18D979EE8A736381221D01E2", "3F09E9F668BF5E3A97E3A301", "4A99136A77400D7CFF732E9E", "B335D8A971A6B0A7CCE576CE", "F89AD87DAE2CF0B62206FB12", "56CDCA551A8BE4955D8AF605", "8F88A6617436D05EBDF1E0B8", "1958CB1C64EE1F5A2FD363F0", "F441721CEB728D91C41BD3F5", "B6F027505D2B4563CBA560DE", "A1D8799762C2E482DD794535", "4F9AF3D95664CEF853BA004F", "D0CE7C45D2F8E6287493D105", "666651AC9F45595CA5F86E22", "5D8F90F6BA5870676BDA3C06", "7D578DCBEE66CA99797F61B4", "CE7754E714B20112E1F6E910", "CE0B5D1FCD0459F4E623142E", "9083C0037F1DB0A218EAE969", "16544079DB5395FD73C81E94");
 			"name" = "Tempo";
 			"sourceTree" = "<group>";
 		};
@@ -181,7 +271,7 @@
 		"8A60FE7439A4F2BDBCE24E59" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = 2147483647;
-			"files" = ("F6481CB7249E5FF546DAB490", "346F053AA35B2D31F3ACC8AC", "27D5848C2DFDDA2C2564899C", "FB9BC633ED35F802E50C2862", "33C9E305451CE7EC6AAAD53C", "F5B2B19A1F2D324DE404DE20", "7DCC408F8EF048AF370811DA", "BAC425450EE0723FF6872D18", "10DDFEBCAC3D1B7BBB0EA183", "067A4064301F80D171DA9D9C", "E158BDCCE81C9FBA034A645D", "FCAAF2FA4BD1C9075C200CA2");
+			"files" = ("F6481CB7249E5FF546DAB490", "346F053AA35B2D31F3ACC8AC", "FB4C2B7B6B0A6568FD74ECA5", "003FE5D1054F00319BD5BBEE", "27D5848C2DFDDA2C2564899C", "FB9BC633ED35F802E50C2862", "33C9E305451CE7EC6AAAD53C", "C522E1B25553825F02EE7AD5", "CA730790D01F9984B5B73386", "F5B2B19A1F2D324DE404DE20", "80FC163B22CF86075AC2F506", "7DCC408F8EF048AF370811DA", "1B20F6735DDDE15CAB36EF49", "BAC425450EE0723FF6872D18", "10DDFEBCAC3D1B7BBB0EA183", "067A4064301F80D171DA9D9C", "E158BDCCE81C9FBA034A645D", "69354441F69F53927308C269", "A218B362500771B5299CE581", "FCAAF2FA4BD1C9075C200CA2", "20A7FFFA562CC9E61B9A0699");
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
 		"C0F172C2F06DF5320D2CAFC0" = {
@@ -196,6 +286,34 @@
 			"files" = ("9A119832F5E89C2E58D0477D", "55954CDFD066895C2DE9400D", "7843FFA391D3966F9D16F7FE", "BDE08FEA8EF5E2ACF183D9A9");
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
+		"5632E9FDC70F2DC0B2D4E983" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "98F54143AB4E86B28C3AFEE0";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "331AAC6A613F632FBA987C73";
+			"remoteInfo" = "TempoActivity";
+		};
+		"4DA75641BEA61A776F463463" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "331AAC6A613F632FBA987C73";
+			"targetProxy" = "5632E9FDC70F2DC0B2D4E983";
+		};
+		"FB1EA9F939ACC40B6A74BC43" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F018EC4F1BF6669E479F666A";
+			"settings" = {
+				"ATTRIBUTES" = ("RemoveHeadersOnCopy");
+			};
+		};
+		"37E8022B7B99C3249E08AE16" = {
+			"isa" = "PBXCopyFilesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"dstPath" = "";
+			"dstSubfolderSpec" = 13;
+			"files" = ("FB1EA9F939ACC40B6A74BC43");
+			"name" = "Embed App Extensions";
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
 		"CE370CA364612545E8323045" = {
 			"isa" = "XCBuildConfiguration";
 			"buildSettings" = {
@@ -208,9 +326,11 @@
 				"CURRENT_PROJECT_VERSION" = "1";
 				"MARKETING_VERSION" = "1.0";
 				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks";
+				"INFOPLIST_FILE" = "Tempo/Info.plist";
+				"INFOPLIST_KEY_NSSupportsLiveActivities" = "YES";
 				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "Tempo";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation" = "YES";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation" = "NO";
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents" = "YES";
 				"INFOPLIST_KEY_UILaunchScreen_Generation" = "YES";
 				"INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone" = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -235,9 +355,11 @@
 				"CURRENT_PROJECT_VERSION" = "1";
 				"MARKETING_VERSION" = "1.0";
 				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks";
+				"INFOPLIST_FILE" = "Tempo/Info.plist";
+				"INFOPLIST_KEY_NSSupportsLiveActivities" = "YES";
 				"ASSETCATALOG_COMPILER_APPICON_NAME" = "AppIcon";
 				"INFOPLIST_KEY_CFBundleDisplayName" = "Tempo";
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation" = "YES";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation" = "NO";
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents" = "YES";
 				"INFOPLIST_KEY_UILaunchScreen_Generation" = "YES";
 				"INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone" = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -257,13 +379,125 @@
 		"E193988FBED4DF18CD925C7B" = {
 			"isa" = "PBXNativeTarget";
 			"buildConfigurationList" = "803DE7D50123593A440BCC6C";
-			"buildPhases" = ("8A60FE7439A4F2BDBCE24E59", "C0F172C2F06DF5320D2CAFC0", "764C67FAA66E1333770608F6");
+			"buildPhases" = ("8A60FE7439A4F2BDBCE24E59", "C0F172C2F06DF5320D2CAFC0", "764C67FAA66E1333770608F6", "37E8022B7B99C3249E08AE16");
 			"buildRules" = ();
-			"dependencies" = ();
+			"dependencies" = ("4DA75641BEA61A776F463463");
 			"name" = "Tempo";
 			"productName" = "Tempo";
 			"productReference" = "DF7D626539C1DC934344EDF9";
 			"productType" = "com.apple.product-type.application";
+		};
+		"DCDDD1E98DBC0EC6E843932A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "TempoActivity/TempoLiveActivity.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"A889C98E4F650DA6D18AF4C3" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "DCDDD1E98DBC0EC6E843932A";
+		};
+		"0201998E49EF06A21999EC4E" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Shared/TempoActivityAttributes.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"9E3352A38A0314B160854A84" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "0201998E49EF06A21999EC4E";
+		};
+		"7EB6CE34B24DD47218878B8C" = {
+			"isa" = "PBXGroup";
+			"children" = ("DCDDD1E98DBC0EC6E843932A", "0201998E49EF06A21999EC4E");
+			"name" = "TempoActivity";
+			"sourceTree" = "<group>";
+		};
+		"F018EC4F1BF6669E479F666A" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.app-extension";
+			"includeInIndex" = 0;
+			"path" = "TempoActivity.appex";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"BE53602F4DD3AB5B3B0DE899" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ("A889C98E4F650DA6D18AF4C3", "9E3352A38A0314B160854A84");
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"3FFC2E480E8C5CC4F2BC2399" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"3429D75D236E731A7E8EE927" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"766333C8D2A7178FA0414EC8" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.yograo.tempo.activity";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"SWIFT_VERSION" = "5.0";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"MARKETING_VERSION" = "1.0";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks";
+				"INFOPLIST_FILE" = "TempoActivity/Info.plist";
+				"SKIP_INSTALL" = "YES";
+				"APPLICATION_EXTENSION_API_ONLY" = "YES";
+				"INFOPLIST_KEY_CFBundleDisplayName" = "Tempo workout";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"ENABLE_TESTABILITY" = "YES";
+			};
+			"name" = "Debug";
+		};
+		"DADAA9DC8A9977BCCD45C6A0" = {
+			"isa" = "XCBuildConfiguration";
+			"buildSettings" = {
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.yograo.tempo.activity";
+				"PRODUCT_NAME" = "$(TARGET_NAME)";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"SWIFT_VERSION" = "5.0";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"MARKETING_VERSION" = "1.0";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks";
+				"INFOPLIST_FILE" = "TempoActivity/Info.plist";
+				"SKIP_INSTALL" = "YES";
+				"APPLICATION_EXTENSION_API_ONLY" = "YES";
+				"INFOPLIST_KEY_CFBundleDisplayName" = "Tempo workout";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
+			};
+			"name" = "Release";
+		};
+		"0D04835B992C3F6AE856E512" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = ("766333C8D2A7178FA0414EC8", "DADAA9DC8A9977BCCD45C6A0");
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"331AAC6A613F632FBA987C73" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "0D04835B992C3F6AE856E512";
+			"buildPhases" = ("BE53602F4DD3AB5B3B0DE899", "3FFC2E480E8C5CC4F2BC2399", "3429D75D236E731A7E8EE927");
+			"buildRules" = ();
+			"dependencies" = ();
+			"name" = "TempoActivity";
+			"productName" = "TempoActivity";
+			"productReference" = "F018EC4F1BF6669E479F666A";
+			"productType" = "com.apple.product-type.app-extension";
 		};
 		"8F59D9613AF47B10C8A071D6" = {
 			"isa" = "PBXFileReference";
@@ -375,13 +609,13 @@
 		};
 		"FBDC4F23F93125BBEEAE800C" = {
 			"isa" = "PBXGroup";
-			"children" = ("DF7D626539C1DC934344EDF9", "7C7F76CE757130D0EC6D98D2");
+			"children" = ("DF7D626539C1DC934344EDF9", "F018EC4F1BF6669E479F666A", "7C7F76CE757130D0EC6D98D2");
 			"name" = "Products";
 			"sourceTree" = "<group>";
 		};
 		"B28B7AF69320201D1CF206EB" = {
 			"isa" = "PBXGroup";
-			"children" = ("4B55F25F7515DEAA5582CDE0", "5BC41B2CCF7297EDDBAF00F0", "FBDC4F23F93125BBEEAE800C");
+			"children" = ("4B55F25F7515DEAA5582CDE0", "7EB6CE34B24DD47218878B8C", "5BC41B2CCF7297EDDBAF00F0", "FBDC4F23F93125BBEEAE800C");
 			"sourceTree" = "<group>";
 		};
 		"89E1FD6268CC0F221A2BE178" = {
@@ -431,7 +665,7 @@
 			"productRefGroup" = "FBDC4F23F93125BBEEAE800C";
 			"projectDirPath" = "";
 			"projectRoot" = "";
-			"targets" = ("E193988FBED4DF18CD925C7B", "60B71A7F0FEE122D5400A0B6");
+			"targets" = ("E193988FBED4DF18CD925C7B", "331AAC6A613F632FBA987C73", "60B71A7F0FEE122D5400A0B6");
 		};
 	};
 	"rootObject" = "98F54143AB4E86B28C3AFEE0";

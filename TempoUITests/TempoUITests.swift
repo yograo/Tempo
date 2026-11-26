@@ -254,15 +254,115 @@ final class TempoUITests: XCTestCase {
     }
 
     @MainActor
-    func testBackgroundingPausesWorkout() {
+    func testBackgroundingContinuesWorkout() {
         let app = launch()
         app.buttons["routine-Everyday energy"].tap()
         app.buttons["start-routine"].tap()
         XCTAssertTrue(app.buttons["pause-resume"].waitForExistence(timeout: 3))
+        if app.buttons["skip-preparation"].exists { app.buttons["skip-preparation"].tap() }
+        XCTAssertTrue(app.staticTexts["current-step"].waitForExistence(timeout: 10))
+        let before = app.staticTexts["countdown"].label
         XCUIDevice.shared.press(.home)
+        Thread.sleep(forTimeInterval: 4)
         app.activate()
-        XCTAssertTrue(app.buttons["Resume"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Paused when you left the app. Resume when you’re ready."].exists)
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 3))
+        XCTAssertNotEqual(app.staticTexts["countdown"].label, before)
+        XCTAssertFalse(app.buttons["Resume"].exists)
+        capture(app, name: "background-workout-continues")
+    }
+
+    @MainActor
+    func testCompletionInBackgroundRestoresAndRecordsHistoryOnce() {
+        let app = launch()
+        app.buttons["create-routine"].tap()
+        app.textFields["routine-name"].tap()
+        app.textFields["routine-name"].typeText("History check\n")
+        addStep(app, name: "Move", rest: false, seconds: "3 sec")
+        addStep(app, name: nil, rest: true, seconds: "3 sec")
+        app.buttons["save-routine"].tap()
+        app.swipeUp()
+        app.buttons["routine-History check"].tap()
+        XCTAssertTrue(app.buttons["start-routine"].waitForExistence(timeout: 5))
+        app.buttons["start-routine"].tap()
+        XCTAssertTrue(app.buttons["skip-preparation"].waitForExistence(timeout: 5))
+        app.buttons["skip-preparation"].tap()
+        XCUIDevice.shared.press(.home)
+        app.terminate()
+        Thread.sleep(forTimeInterval: 8)
+        app.launchArguments = ["-ui-testing", "-preserve-routines"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["You showed up."].waitForExistence(timeout: 10))
+        app.buttons["finish-workout"].tap()
+        expectation(for: NSPredicate { _, _ in app.frame.width < app.frame.height }, evaluatedWith: app)
+        waitForExpectations(timeout: 5)
+        app.buttons["workout-history"].tap()
+        XCTAssertTrue(app.navigationBars["Workout history"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["History check"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "History check").count, 1)
+        XCTAssertTrue(app.staticTexts["Finished · 6s"].exists)
+        capture(app, name: "workout-history")
+        app.terminate()
+        app.launch()
+        app.buttons["workout-history"].tap()
+        XCTAssertEqual(app.staticTexts.matching(identifier: "History check").count, 1)
+        app.buttons["Options for History check workout"].tap()
+        app.buttons["Delete workout"].tap()
+        app.buttons["Delete workout"].tap()
+        XCTAssertTrue(app.staticTexts["Your first workout starts here"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func testSpokenPreferenceAndEndedEarlyHistory() {
+        let app = launch()
+        app.buttons["workout-settings"].tap()
+        XCTAssertEqual(app.switches["spoken-cues-setting"].value as? String, "1")
+        app.switches["spoken-cues-setting"].coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        XCTAssertEqual(app.switches["spoken-cues-setting"].value as? String, "0")
+        capture(app, name: "workout-settings")
+        app.terminate()
+        app.launchArguments = ["-ui-testing", "-preserve-routines"]
+        app.launch()
+        app.buttons["routine-Everyday energy"].tap()
+        app.buttons["start-routine"].tap()
+        XCTAssertTrue(app.buttons["Turn spoken cues on"].waitForExistence(timeout: 5))
+        app.buttons["skip-preparation"].tap()
+        app.buttons["pause-resume"].tap()
+        app.buttons["Close workout"].tap()
+        app.buttons["End workout"].tap()
+        app.terminate()
+        app.launch()
+        app.buttons["workout-history"].tap()
+        XCTAssertTrue(app.staticTexts["Everyday energy"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Ended early ·")).count, 1)
+        capture(app, name: "partial-workout-history")
+    }
+
+    @MainActor
+    func testLockScreenAlertsAndLiveActivity() {
+        let app = launch()
+        app.buttons["workout-settings"].tap()
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        if !app.staticTexts["Interval alerts enabled"].exists {
+            app.buttons["enable-interval-alerts"].tap()
+            let allow = springboard.buttons["Allow"]
+            if allow.waitForExistence(timeout: 3) { allow.tap() }
+        }
+        XCTAssertTrue(app.staticTexts["Interval alerts enabled"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.buttons["routine-Everyday energy"].tap()
+        app.buttons["start-routine"].tap()
+        XCTAssertTrue(app.buttons["pause-resume"].waitForExistence(timeout: 30))
+        XCTAssertTrue(app.buttons["Turn spoken cues off"].exists)
+        capture(app, name: "spoken-workout")
+        XCUIDevice.shared.press(.home)
+        // Pull down Notification Center, which renders the same Live Activity as the Lock Screen.
+        let top = springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.01))
+        top.press(forDuration: 0.1, thenDragTo: springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.85)))
+        if springboard.buttons["Allow"].waitForExistence(timeout: 2) { springboard.buttons["Allow"].tap() }
+        XCTAssertTrue(springboard.staticTexts["Everyday energy"].waitForExistence(timeout: 10))
+        capture(springboard, name: "lock-screen-live-activity")
+        app.activate()
+        XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 5))
     }
 
     @MainActor

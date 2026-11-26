@@ -6,11 +6,13 @@ struct TempoApp: App {
     @UIApplicationDelegateAdaptor(TempoAppDelegate.self) private var appDelegate
     @State private var store = RoutineStore()
     @State private var workouts = WorkoutStore()
+    @State private var featureRequests = FeatureRequestComposer.configured()
 
     var body: some Scene {
         WindowGroup {
             RoutineLibraryView(store: store)
                 .environment(workouts)
+                .environment(featureRequests)
                 .tint(TempoTheme.ink)
                 .preferredColorScheme(.light)
                 .fullScreenCover(item: Binding(get: { workouts.controller }, set: { if $0 == nil { workouts.close() } })) { controller in

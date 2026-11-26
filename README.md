@@ -1,6 +1,6 @@
 # Tempo
 
-A native SwiftUI exercise timer for iPhone and iPad, supporting iOS 17 and later. No account, network connection, or third-party dependencies required.
+A native SwiftUI exercise timer for iPhone and iPad, supporting iOS 17 and later. Workouts require no account or network connection. The feature-request form uses an internet connection; the app has no third-party dependencies.
 
 ## Run
 
@@ -11,6 +11,8 @@ A native SwiftUI exercise timer for iPhone and iPad, supporting iOS 17 and later
 The included **Everyday energy** routine is ready to try. Tap **Create routine** to build your own.
 
 Simulator previews: [library](design/library.png), [routine](design/routine.png), [preparation](design/preparation.png), [landscape countdown](design/countdown.png), [rest](design/rest.png), [completion](design/complete.png), [editor](design/editor.png), and [icon picker](design/icon-picker.png).
+
+Feature requests: [form](design/feature-request-form.png), [confirmation](design/feature-request-success.png), and [saved retry](design/feature-request-retry.png).
 
 New screens: [workout history](design/workout-history.png), [workout settings](design/workout-settings.png), and [Lock Screen countdown and alert](design/lock-screen.png).
 
@@ -32,6 +34,11 @@ New screens: [workout history](design/workout-history.png), [workout settings](d
 - Restore an unfinished workout after relaunch. If it finished while Tempo was suspended, its history entry is saved once when you reopen the app.
 - Mute sounds during a workout. Step changes and completion also provide haptics on supported hardware.
 - Keep the screen awake while the timer runs.
+- Send an idea from **Workout settings → Request a feature**, with a required reply email. Requests are private to the developer; email is used only to respond about the request.
+
+**Feature requests:** The form accepts a 3–120-character title and 10–4,000-character description, counted as Unicode code points to match the API. A reply email is required, supports common ASCII addresses and plus addressing, and is limited to 254 characters. The form explains what is sent before submission. Email ownership is not verified, and collecting an address does not subscribe the user or send an automatic email.
+
+Drafts are stored in the app's private Application Support folder, excluded from backup, and protected on iOS. Before sending, Tempo saves an immutable payload and a random request ID. A failed or uncertain request can be retried with that same ID, including after relaunch; fields stay locked until receipt is confirmed or the user explicitly discards the saved copy. Discarding a local copy does not retract an already received request. A confirmed receipt clears the saved draft. Networking uses an ephemeral session and does not follow redirects or log request contents. The endpoint is public and has no client secret.
 
 **Lock Screen alerts:** Open **Workout settings → Enable interval alerts** before starting a workout. Tempo prepares short speech sound files, then asks iOS to deliver interval and completion notifications even while the app is suspended. With spoken cues off (or if a speech file cannot be generated), notifications use tones. Foreground countdowns use the device’s media volume; locked-screen notifications follow silent mode, Focus, and notification sound settings. Muting a workout also silences its scheduled alerts.
 
@@ -58,6 +65,8 @@ xcodebuild -project Tempo.xcodeproj -scheme Tempo \
 ```
 
 `testVisualTour` saves screenshots of the main screens as Xcode test attachments.
+
+Feature-request tests cover required email, validation, payload encoding, receipt matching, duplicate prevention, persistence across relaunch, and storage failures. `FeatureRequestUITests` exercises the form and captures empty, filled, retry, and success screens. UI tests use an isolated draft file and a debug-only fake sender, so automated UI checks do not upload requests. The API is tested separately against its live endpoint.
 
 Verified: 36 core tests; targeted simulator checks for background continuation, completion after force-quit, history persistence/deletion, spoken-cue preferences, early-ended workouts, notification permission, Live Activity rendering, pause/skip/restart, and orientation. Simulator and unsigned iOS device builds pass.
 

@@ -67,8 +67,8 @@ for name, folder, is_test in [("Tempo", "Tempo", False), ("TempoActivity", "Temp
     settings = {
         "PRODUCT_BUNDLE_IDENTIFIER": "com.yograo.tempo.uitests" if is_test else "com.yograo.tempo.activity" if is_widget else "com.yograo.tempo",
         "PRODUCT_NAME": "$(TARGET_NAME)", "GENERATE_INFOPLIST_FILE": "YES", "SWIFT_VERSION": "5.0",
-        "TARGETED_DEVICE_FAMILY": "1,2", "CODE_SIGN_STYLE": "Automatic", "CURRENT_PROJECT_VERSION": "1",
-        "MARKETING_VERSION": "1.0", "LD_RUNPATH_SEARCH_PATHS": "$(inherited) @executable_path/Frameworks",
+        "TARGETED_DEVICE_FAMILY": "1,2", "CODE_SIGN_STYLE": "Automatic", "CURRENT_PROJECT_VERSION": "2",
+        "MARKETING_VERSION": "1.1", "LD_RUNPATH_SEARCH_PATHS": "$(inherited) @executable_path/Frameworks",
     }
     dependencies = []
     if is_test:

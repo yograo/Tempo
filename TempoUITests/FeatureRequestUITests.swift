@@ -9,6 +9,7 @@ final class FeatureRequestUITests: XCTestCase {
         let link = app.buttons["request-feature"]
         for _ in 0..<4 where !link.isHittable { app.swipeUp() }
         XCTAssertTrue(link.waitForExistence(timeout: 5))
+        capture("feature-request-entry")
         link.tap()
         XCTAssertTrue(app.textFields["feature-title"].waitForExistence(timeout: 5))
     }

@@ -11,6 +11,13 @@ struct WorkoutSettingsView: View {
     var body: some View {
         Form {
             Section {
+                NavigationLink { FeatureRequestView() } label: {
+                    Label("Request a feature", systemImage: "lightbulb")
+                }.accessibilityIdentifier("request-feature")
+            } header: { Text("Help shape Tempo") } footer: {
+                Text("Have an idea? Send it privately to Tempo’s developer, with your email so we can reply.")
+            }
+            Section {
                 Toggle("Spoken cues", isOn: $speechEnabled).accessibilityIdentifier("spoken-cues-setting")
             } header: { Text("Audio") } footer: {
                 Text("Hear exercise names, durations, countdowns, and completion. Turn this off for tones only. You can mute all audio during a workout.")
@@ -47,13 +54,6 @@ struct WorkoutSettingsView: View {
                 Label("Saved on this device", systemImage: "iphone")
                 Text("Routines and workout history stay on your device. No account or network connection is required.")
                     .font(.subheadline).foregroundStyle(TempoTheme.muted)
-            }
-            Section {
-                NavigationLink { FeatureRequestView() } label: {
-                    Label("Request a feature", systemImage: "lightbulb")
-                }.accessibilityIdentifier("request-feature")
-            } header: { Text("Help shape Tempo") } footer: {
-                Text("Have an idea? Send it privately to Tempo’s developer, with your email so we can reply.")
             }
         }
         .scrollContentBackground(.hidden).tempoBackground().foregroundStyle(TempoTheme.ink)

@@ -48,6 +48,13 @@ struct WorkoutSettingsView: View {
                 Text("Routines and workout history stay on your device. No account or network connection is required.")
                     .font(.subheadline).foregroundStyle(TempoTheme.muted)
             }
+            Section {
+                NavigationLink { FeatureRequestView() } label: {
+                    Label("Request a feature", systemImage: "lightbulb")
+                }.accessibilityIdentifier("request-feature")
+            } header: { Text("Help shape Tempo") } footer: {
+                Text("Have an idea? Send it privately to Tempo’s developer, with your email so we can reply.")
+            }
         }
         .scrollContentBackground(.hidden).tempoBackground().foregroundStyle(TempoTheme.ink)
         .navigationTitle("Workout settings").navigationBarTitleDisplayMode(.inline)

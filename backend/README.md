@@ -93,6 +93,8 @@ This policy grants deployment and owner review permissions for Tempo's stacks, t
 
 The policy also acts as a permissions ceiling on **all** newly created bootstrap roles and the Lambda runtime role. The runtime's actual permissions remain only DynamoDB conditional writes and logging. The generated bootstrap template replaces CDK's default administrator execution policy and uses S3-managed encryption for the private artifact bucket.
 
+Tagged HTTP API stage creation checks `apigateway:TagResource` on `/apis/API_ID/stages` in addition to the usual API Gateway HTTP-method permissions. The generated policy includes this grant for stage collections in the selected region. This additional check was observed during deployment; granting only `apigateway:POST` and `apigateway:PATCH` did not satisfy it.
+
 After the administrator attaches the policy, use the dedicated Tempo bootstrap:
 
 ```sh

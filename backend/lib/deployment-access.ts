@@ -27,6 +27,10 @@ export function deploymentPolicy(account: string, region: string) {
       // HTTP API IDs are assigned by AWS, so these control-plane permissions
       // cover HTTP APIs and API Gateway tags in this region.
       allow(["apigateway:GET", "apigateway:POST", "apigateway:PUT", "apigateway:PATCH", "apigateway:DELETE"], [`arn:aws:apigateway:${region}::/apis`, `arn:aws:apigateway:${region}::/apis/*`, `arn:aws:apigateway:${region}::/tags/*`]),
+      // CreateStage with tags also checks this named action on the stages
+      // collection, even when the HTTP-method permissions above are allowed.
+      // Observed in CloudFormation's CreateStage AccessDenied response.
+      allow(["apigateway:TagResource"], [`arn:aws:apigateway:${region}::/apis/*/stages`]),
       allow(["iam:CreateRole", "iam:PutRolePermissionsBoundary"], [appRoles, bootstrapRoles], { StringEquals: { "iam:PermissionsBoundary": boundary } }),
       allow(["iam:GetRole", "iam:GetRolePolicy", "iam:ListRolePolicies", "iam:ListAttachedRolePolicies", "iam:ListRoleTags", "iam:PutRolePolicy", "iam:DeleteRolePolicy", "iam:DeleteRole", "iam:UpdateRole", "iam:UpdateAssumeRolePolicy", "iam:TagRole", "iam:UntagRole"], [appRoles, bootstrapRoles]),
       allow(["iam:AttachRolePolicy", "iam:DetachRolePolicy"], [appRoles, bootstrapRoles], { ArnEquals: { "iam:PolicyARN": [boundary, "arn:aws:iam::aws:policy/ReadOnlyAccess", "arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess", "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"] } }),

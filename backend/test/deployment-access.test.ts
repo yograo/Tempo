@@ -29,6 +29,14 @@ test("new roles require the immutable boundary, and the deployer cannot grant us
   assert.equal(boundary.includes("policy/TempoFeatureRequests-"), false);
 });
 
+test("tagged HTTP API stage creation has its additional permission in the selected region", () => {
+  const ohioPolicy = deploymentPolicy(account, "us-east-2");
+  const stageTagging = ohioPolicy.Statement.find((s) => s.Action.includes("apigateway:TagResource"));
+  assert.ok(stageTagging, "CreateStage checks TagResource in addition to its HTTP-method permission");
+  assert.deepEqual(stageTagging.Resource, ["arn:aws:apigateway:us-east-2::/apis/*/stages"]);
+  assert.equal(JSON.stringify(ohioPolicy).includes("us-west-2"), false);
+});
+
 test("the bootstrap puts the boundary on every role and never grants AdministratorAccess", () => {
   const original = JSON.parse(execFileSync(process.execPath,
     ["node_modules/aws-cdk/bin/cdk", "bootstrap", "--show-template", "--json"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }));

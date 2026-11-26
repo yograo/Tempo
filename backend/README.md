@@ -66,9 +66,11 @@ The check builds the Lambda with its pinned AWS SDK dependency, tests validation
 
 Keep credentials in your AWS CLI setup; never put them in this repository. Root-account access keys are unnecessary. An administrator must first create and attach the scoped deployment policy described below; the deployment user cannot grant itself permissions.
 
+For AWS's new project-based experience, first check **AWS Settings → Projects → your project → Overview → Additional Info → Region**. Use that assigned region for the CLI profile, policy generation, and deployment. US-based projects normally use `us-east-2` (Ohio); the example below uses that region. These accounts have AWS-managed organization policies that can reject deployment in other regions even when IAM allows it. The services used by this API are supported in the new experience; enabling advanced features is not required just to deploy them in the assigned region. See [AWS project regions](https://docs.aws.amazon.com/accounts/latest/reference/project-regions.html) and [supported services](https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html).
+
 ```sh
 export AWS_PROFILE=tempo
-export AWS_REGION=us-west-2
+export AWS_REGION=us-east-2
 aws sts get-caller-identity
 
 cd backend
@@ -84,6 +86,8 @@ The last command only writes local files; it does not change AWS permissions. In
 1. Open **IAM → Policies → Create policy → JSON** and paste `backend/cdk.out/deployment-policy.json`.
 2. Name the policy **TempoFeedbackDeploymentBoundary** exactly, then create it.
 3. Open **IAM → Users → your deployment user → Permissions → Add permissions → Attach policies directly**. Select **TempoFeedbackDeploymentBoundary** and add it as a permission policy.
+
+If initial setup used the wrong region and nothing has been deployed yet, regenerate the files for the assigned region. Open **IAM → Policies → TempoFeedbackDeploymentBoundary → Edit → JSON**, replace the contents with the regenerated policy, and save it as the default version. The existing user attachment continues to apply; no new policy or access keys are needed.
 
 This policy grants deployment and owner review permissions for Tempo's stacks, tables, functions, logs, alarms, IAM roles/policies, and dedicated CDK asset resources. HTTP API and API Gateway tag management covers the selected region because API IDs are assigned by AWS; some validation, authentication, and listing operations require `Resource: "*"`. It is not an account administrator policy. It does not grant IAM user management, removal of role boundaries, or modification of the boundary policy itself. Existing permissions on the deployment user are left unchanged.
 

@@ -10,6 +10,7 @@ const standard = JSON.parse(execFileSync(process.execPath,
 await mkdir("cdk.out", { recursive: true });
 await writeFile("cdk.out/deployment-policy.json", JSON.stringify(policy, null, 2) + "\n");
 await writeFile("cdk.out/tempo-bootstrap.json", JSON.stringify(scopedBootstrap(standard), null, 2) + "\n");
-console.log(`Create an IAM managed policy named ${BOUNDARY_POLICY_NAME} using cdk.out/deployment-policy.json, then attach it to your deployment user.`);
+console.log(`Prepared deployment access for account ${account} in ${region}.`);
+console.log(`Create an IAM managed policy named ${BOUNDARY_POLICY_NAME} using cdk.out/deployment-policy.json, then attach it to your deployment user. If it already exists, have the administrator update its default version instead.`);
 console.log(`Policy size excluding whitespace: ${JSON.stringify(policy).length} / 6144 characters.`);
 console.log("Prepared cdk.out/tempo-bootstrap.json. No AWS permissions or resources were changed.");

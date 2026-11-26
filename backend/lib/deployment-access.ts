@@ -5,7 +5,7 @@ export const BOUNDARY_POLICY_NAME = "TempoFeedbackDeploymentBoundary";
 /** This is both the deployer's permission policy and the ceiling on created roles. */
 export function deploymentPolicy(account: string, region: string) {
   if (!/^\d{12}$/.test(account)) throw new Error("Use a 12-digit AWS account ID.");
-  if (!/^us-(?:east|west)-[12]$/.test(region)) throw new Error("Use a supported US commercial region, such as us-west-2.");
+  if (!/^us-(?:east|west)-[12]$/.test(region)) throw new Error("Use a supported US commercial region, such as us-east-2. For an AWS project, use its assigned region.");
   const arn = (service: string, resource: string) => `arn:aws:${service}:${region}:${account}:${resource}`;
   const boundary = `arn:aws:iam::${account}:policy/${BOUNDARY_POLICY_NAME}`;
   const appRoles = `arn:aws:iam::${account}:role/TempoFeatureRequests-*`;

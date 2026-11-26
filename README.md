@@ -74,3 +74,7 @@ Physical-device notification audio, Focus behavior, and haptics require device v
 - `TempoUITests`: simulator interaction tests.
 
 `python3 scripts/generate_project.py` regenerates the Xcode project, app icon, and WAV cues using only Python’s standard library. Run it after adding new Swift source files. The generated project and resources are already included.
+
+## Feature-request backend
+
+The [backend](backend/README.md) implements a public `POST /v1/feature-requests` API on AWS. App users submit requests with a reply email; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is implemented in the `feature/feature-request-form` branch.

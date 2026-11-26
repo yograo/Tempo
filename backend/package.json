@@ -1,0 +1,31 @@
+{
+  "name": "tempo-feature-requests-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc && node scripts/bundle.mjs",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "synth": "npm run build && cdk synth --quiet",
+    "cdk": "cdk --toolkit-stack-name TempoCDKToolkit",
+    "prepare-access": "tsc && node scripts/prepare-access.mjs",
+    "check": "npm run build && node --test dist/test/*.test.js && cdk synth --quiet",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.1155.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.164",
+    "@types/node": "24.19.2",
+    "aws-cdk": "2.1146.0",
+    "aws-cdk-lib": "2.274.0",
+    "constructs": "10.8.1",
+    "esbuild-wasm": "0.28.2",
+    "typescript": "5.9.3"
+  }
+}

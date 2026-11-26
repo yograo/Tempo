@@ -1,5 +1,7 @@
 # Tempo
 
+AI contributors: read [AGENTS.md](AGENTS.md) for architecture, verification, deployment, and operational context.
+
 A native SwiftUI exercise timer for iPhone and iPad, supporting iOS 17 and later. Workouts require no account or network connection. The feature-request form uses an internet connection; the app has no third-party dependencies.
 
 ## Run
@@ -68,7 +70,7 @@ xcodebuild -project Tempo.xcodeproj -scheme Tempo \
 
 Feature-request tests cover required email, validation, payload encoding, receipt matching, duplicate prevention, persistence across relaunch, and storage failures. `FeatureRequestUITests` exercises the form and captures empty, filled, retry, and success screens. UI tests use an isolated draft file and a debug-only fake sender, so automated UI checks do not upload requests. The API is tested separately against its live endpoint.
 
-Verified: 36 core tests; targeted simulator checks for background continuation, completion after force-quit, history persistence/deletion, spoken-cue preferences, early-ended workouts, notification permission, Live Activity rendering, pause/skip/restart, and orientation. Simulator and unsigned iOS device builds pass.
+Verified: 44 core tests; targeted simulator checks for background continuation, completion after force-quit, history persistence/deletion, spoken-cue preferences, early-ended workouts, notification permission, Live Activity rendering, pause/skip/restart, and orientation. Simulator and unsigned iOS device builds pass.
 
 Physical-device notification audio, Focus behavior, and haptics require device verification; simulator checks cannot establish their behavior on a locked physical iPhone.
 
@@ -86,4 +88,4 @@ Physical-device notification audio, Focus behavior, and haptics require device v
 
 ## Feature-request backend
 
-The [backend](backend/README.md) implements a public `POST /v1/feature-requests` API on AWS. App users submit requests with a reply email; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is implemented in the `feature/feature-request-form` branch.
+The [backend](backend/README.md) implements a public `POST /v1/feature-requests` API on AWS. App users submit requests with a reply email; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is available under Workout settings → Help shape Tempo → Request a feature.

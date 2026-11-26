@@ -7,7 +7,7 @@ const stage: unknown = app.node.tryGetContext("stage") ?? "dev";
 if (stage !== "dev" && stage !== "prod") throw new Error("stage must be dev or prod.");
 
 const stack = new FeedbackStack(app, `TempoFeatureRequests-${stage}`, {
-  description: "Anonymous feature submissions for Tempo; private owner review through AWS IAM.",
+  description: "Feature submissions with reply emails for Tempo; private owner review through AWS IAM.",
 });
 Tags.of(stack).add("Application", "TempoFeatureRequests");
 Tags.of(stack).add("Environment", stage);

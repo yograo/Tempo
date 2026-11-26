@@ -1,6 +1,6 @@
 # Tempo feature-request API
 
-A public submission endpoint for Tempo users, with an optional reply email, backed by API Gateway HTTP API, a Node.js 24 Lambda, and DynamoDB. This folder is independent of the iOS app.
+A public submission endpoint for Tempo users, with a required reply email, backed by API Gateway HTTP API, a Node.js 24 Lambda, and DynamoDB. This folder is independent of the iOS app.
 
 ## API contract
 
@@ -33,7 +33,7 @@ No request text or previously stored data is returned. Reusing an ID with differ
 | `title` | Required single line, 3–120 Unicode characters after trimming |
 | `description` | Required, 10–4000 Unicode characters after trimming; newlines and tabs allowed |
 | `appVersion` | Required numeric version, such as `1`, `1.0`, or `1.2.3`; at most 32 characters |
-| `email` | Optional reply address; blank values are omitted. At most 254 characters, a local part of at most 64 characters, and domain labels of at most 63. Common ASCII mailboxes and plus addressing are supported; only the domain is lowercased. |
+| `email` | Required reply address; missing and blank values are rejected. At most 254 characters, a local part of at most 64 characters, and domain labels of at most 63. Common ASCII mailboxes and plus addressing are supported; only the domain is lowercased. |
 
 Unknown fields are rejected. The complete UTF-8 body must be at most 24 KiB; compressed bodies are unsupported. The server adds `createdAt` (UTC ISO 8601) and `status: "new"`.
 
@@ -48,7 +48,7 @@ Unknown fields are rejected. The complete UTF-8 body must be at most 24 KiB; com
 
 Application errors have the shape `{"error":{"code":"invalid_request","message":"..."}}`. Gateway-generated errors, including throttling and unknown routes, can use AWS's `{"message":"..."}` shape. Clients should use the HTTP status rather than rely on one error shape.
 
-There are **no public GET, list, update, or delete routes**, no client login, and no API key to embed in the app. The public endpoint can be called by anyone; it does not attest that a submission came from an installed copy of Tempo. A supplied email is stored privately with its request and is never echoed in the response or logged. No device IDs, IP addresses, or user-agent strings are stored with submissions. Users can still voluntarily put personal information in their free-text requests. Email ownership and deliverability are not verified; the address is for manual replies about that request, not a subscription. This API does not send email.
+There are **no public GET, list, update, or delete routes**, no client login, and no API key to embed in the app. The public endpoint can be called by anyone; it does not attest that a submission came from an installed copy of Tempo. The reply email is stored privately with its request and is never echoed in the response or logged. No device IDs, IP addresses, or user-agent strings are stored with submissions. Users can still voluntarily put personal information in their free-text requests. Email ownership and deliverability are not verified; the address is for manual replies about that request, not a subscription. This API does not send email.
 
 ## Build and test
 
@@ -129,11 +129,9 @@ After deployment, test the live endpoint:
 
 ```sh
 npm run smoke -- 'https://API_ID.execute-api.REGION.amazonaws.com/v1/feature-requests'
-# Also exercise a submission with a synthetic reply address.
-npm run smoke -- 'https://API_ID.execute-api.REGION.amazonaws.com/v1/feature-requests' --with-email
 ```
 
-Each run intentionally writes **one labeled test request**, retries it with changed text and email, checks validation, and checks that GET doesn't expose data. Using your AWS identity, verify that the reported request ID has the original title and optional email in DynamoDB. The test row can be deleted through your authorized AWS identity afterwards; the API cannot delete it.
+Each run intentionally writes **one labeled test request**, retries it with changed text and email, checks validation, and checks that GET doesn't expose data. Using your AWS identity, verify that the reported request ID has the original title and email in DynamoDB. The test row can be deleted through your authorized AWS identity afterwards; the API cannot delete it.
 
 ## Private owner review
 

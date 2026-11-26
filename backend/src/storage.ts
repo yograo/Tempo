@@ -15,7 +15,7 @@ export function createWriter(client: DynamoWriter, tableName: string) {
           title: { S: request.title },
           description: { S: request.description },
           appVersion: { S: request.appVersion },
-          ...(request.email ? { email: { S: request.email } } : {}),
+          email: { S: request.email },
           createdAt: { S: request.createdAt },
           status: { S: request.status },
         },

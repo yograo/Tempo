@@ -13,7 +13,7 @@ if (url.protocol !== "https:" || !url.hostname.endsWith(".amazonaws.com") || url
 
 const payload = { requestId: randomUUID(), title: "API deployment smoke test",
   description: "Automated test submission. The owner can remove this entry after deployment.", appVersion: "1.0",
-  ...(process.argv.includes("--with-email") ? { email: "tempo-api-test@example.com" } : {}) };
+  email: "tempo-api-test@example.com" };
 
 async function send(body, method = "POST") {
   // Respect the deliberately low public request rate.
@@ -34,6 +34,8 @@ assert.deepEqual(await send({ ...payload, title: "Must not overwrite the origina
 const invalid = await send({ ...payload, requestId: randomUUID(), title: "" });
 assert.equal(invalid.status, 400);
 assert.equal((await send({ ...payload, requestId: randomUUID(), email: "not-an-email" })).status, 400);
+const { email: omittedEmail, ...withoutEmail } = payload;
+assert.equal((await send({ ...withoutEmail, requestId: randomUUID() })).status, 400);
 const read = await send(undefined, "GET");
 assert.ok([403, 404, 405].includes(read.status), "There must be no public read endpoint.");
 console.log(`Smoke test passed. Owner verification requestId: ${payload.requestId}`);

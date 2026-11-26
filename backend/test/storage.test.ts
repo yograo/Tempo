@@ -5,7 +5,7 @@ import { createWriter } from "../src/storage.js";
 import type { FeatureRequest } from "../src/submit.js";
 
 const request: FeatureRequest = { requestId: "00000000-0000-4000-8000-000000000000", title: "Repeat blocks",
-  description: "Please repeat blocks of exercises.", appVersion: "1.0", createdAt: "2026-11-21T10:00:00.000Z", status: "new" };
+  description: "Please repeat blocks of exercises.", appVersion: "1.0", email: "reply@example.com", createdAt: "2026-11-21T10:00:00.000Z", status: "new" };
 
 test("writes conditionally, requests no old data, and performs no reads", async () => {
   const calls: PutItemCommand[] = [];

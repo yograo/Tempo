@@ -4,7 +4,7 @@ import { test } from "node:test";
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import { createSubmitHandler, MAX_BODY_BYTES, SUBMISSION_PATH, type FeatureRequest } from "../src/submit.js";
 
-const payload = () => ({ requestId: randomUUID(), title: "Repeat exercise blocks", description: "Please let me repeat a group of exercises five times.", appVersion: "1.0" });
+const payload = () => ({ requestId: randomUUID(), title: "Repeat exercise blocks", description: "Please let me repeat a group of exercises five times.", appVersion: "1.0", email: "reply@example.com" });
 const timestamp = "2026-11-21T10:00:00.000Z";
 function event(body: unknown = payload(), changes: Partial<APIGatewayProxyEventV2> = {}): APIGatewayProxyEventV2 {
   return {
@@ -27,7 +27,7 @@ function setup() {
   return { handler, records, failures: () => failures };
 }
 
-test("accepts anonymous requests and returns only a receipt; stores no network metadata", async () => {
+test("accepts valid requests and returns only a receipt; stores no network metadata", async () => {
   const { handler, records } = setup();
   const input = payload();
   const result = await handler(event(input));
@@ -89,7 +89,7 @@ for (const [name, value] of Object.entries({
   });
 }
 
-test("stores optional reply email privately, trims it, and normalizes only the domain", async () => {
+test("stores reply email privately, trims it, and normalizes only the domain", async () => {
   const { handler, records } = setup();
   const input = { ...payload(), email: "  Ada+tempo@EXAMPLE.test  " };
   const result = await handler(event(input));
@@ -100,14 +100,14 @@ test("stores optional reply email privately, trims it, and normalizes only the d
   assert.equal(records.get(input.requestId)?.email, "Ada+tempo@example.test");
 });
 
-test("omits blank optional emails", async () => {
+test("rejects a missing reply email", async () => {
   const { handler, records } = setup();
-  const input = { ...payload(), email: "   " };
-  assert.equal((await handler(event(input))).statusCode, 202);
-  assert.equal(Object.hasOwn(records.get(input.requestId)!, "email"), false);
+  const { email, ...input } = payload();
+  assert.equal((await handler(event(input))).statusCode, 400);
+  assert.equal(records.size, 0);
 });
 
-for (const email of [null, 42, [], "missing-at", "a@@example.com", "a@.test", "a@-example.test",
+for (const email of [null, 42, [], "", "   ", "missing-at", "a@@example.com", "a@.test", "a@-example.test",
   "a@example..test", ".a@example.com", "a..b@example.com", "a.@example.com", "a b@example.com",
   "a@example.com\r\nBcc: other@example.com", "\ta@example.com", "é@example.com",
   `${"a".repeat(65)}@example.com`, `a@${"b".repeat(64)}.com`,

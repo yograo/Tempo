@@ -9,7 +9,7 @@ export interface FeatureRequest {
   title: string;
   description: string;
   appVersion: string;
-  email?: string;
+  email: string;
   createdAt: string;
   status: "new";
 }
@@ -90,11 +90,11 @@ export function createSubmitHandler(dependencies: SubmissionDependencies) {
       return error(400, "invalid_json", "Send a valid UTF-8 JSON object.");
     }
     if (data === null || typeof data !== "object" || Array.isArray(data)) {
-      return error(400, "invalid_request", "Send a JSON object with requestId, title, description, and appVersion.");
+      return error(400, "invalid_request", "Send a JSON object with requestId, title, description, appVersion, and email.");
     }
     const input = data as Record<string, unknown>;
     if (Object.keys(input).some((field) => !fields.has(field))) {
-      return error(400, "invalid_request", "Only requestId, title, description, appVersion, and optional email are accepted.");
+      return error(400, "invalid_request", "Only requestId, title, description, appVersion, and email are accepted.");
     }
     if (typeof input.requestId !== "string" || !uuidV4.test(input.requestId)) {
       return error(400, "invalid_request", "requestId must be a randomly generated UUID v4.");
@@ -108,20 +108,12 @@ export function createSubmitHandler(dependencies: SubmissionDependencies) {
     if (typeof input.appVersion !== "string" || input.appVersion.length > 32 || !/^\d+(?:\.\d+){0,2}$/.test(input.appVersion)) {
       return error(400, "invalid_request", "appVersion must be a version such as 1.0 or 1.2.3 (at most 32 characters).");
     }
-    let email: string | undefined;
-    if (input.email !== undefined) {
-      if (typeof input.email !== "string" || /[\u0000-\u001f\u007f]/u.test(input.email)) {
-        return error(400, "invalid_request", "email must be a valid reply address or left blank.");
-      }
-      if (input.email.trim()) {
-        email = cleanEmail(input.email);
-        if (!email) return error(400, "invalid_request", "email must be a valid reply address of at most 254 characters.");
-      }
-    }
+    const email = typeof input.email === "string" ? cleanEmail(input.email) : undefined;
+    if (!email) return error(400, "invalid_request", "email is required and must be a valid reply address of at most 254 characters.");
     const requestId = input.requestId.toLowerCase();
     try {
       await dependencies.write({ requestId, title, description, appVersion: input.appVersion,
-        ...(email ? { email } : {}),
+        email,
         createdAt: dependencies.now().toISOString(), status: "new" });
     } catch {
       // Never log payloads, SDK exceptions, identifiers, or source IP addresses.

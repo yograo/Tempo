@@ -35,6 +35,8 @@ No request text or previously stored data is returned. Reusing an ID with differ
 | `appVersion` | Required numeric version, such as `1`, `1.0`, or `1.2.3`; at most 32 characters |
 | `email` | Required reply address; missing and blank values are rejected. At most 254 characters, a local part of at most 64 characters, and domain labels of at most 63. Common ASCII mailboxes and plus addressing are supported; only the domain is lowercased. |
 
+Email is required for new submissions; older stored records may not have it.
+
 Unknown fields are rejected. The complete UTF-8 body must be at most 24 KiB; compressed bodies are unsupported. The server adds `createdAt` (UTC ISO 8601) and `status: "new"`.
 
 | HTTP status | Client behavior |

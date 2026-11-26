@@ -65,4 +65,4 @@ Verified on the iPhone 17 Pro simulator (iOS 26.4): 23 core tests passed, along 
 
 ## Feature-request backend
 
-The [backend](backend/README.md) implements an anonymous `POST /v1/feature-requests` API on AWS. App users can submit requests; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is a separate follow-up.
+The [backend](backend/README.md) implements a public `POST /v1/feature-requests` API on AWS. App users submit requests with a reply email; reviewing stored requests requires your AWS identity. It includes AWS CDK infrastructure, validation and permission tests, deployment instructions, and a live smoke test. The iOS submission form is implemented in the `feature/feature-request-form` branch.
